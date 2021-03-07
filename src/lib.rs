@@ -74,7 +74,7 @@ pub fn bitmask(attr: TokenStream, item: TokenStream) -> TokenStream {
 
     let item = parse_macro_input!(item as ItemEnum);
     let vis = item.vis.clone();
-    let (ident, idents, exprs) = enm(&typ, item);
+    let (ident, idents, exprs) = enm(item);
 
     let enm = quote::quote! {
         #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -85,7 +85,7 @@ pub fn bitmask(attr: TokenStream, item: TokenStream) -> TokenStream {
             #[doc(hidden)]
             const __CONST_TWO: #typ = 2;
 
-            #(#vis const #idents: #ident = #ident(#exprs);)*
+            #(#vis const #idents: #ident = #exprs;)*
 
             /// contains all values
             #[inline]
@@ -237,11 +237,10 @@ fn typ(attr: TokenStream) -> String {
     }
 }
 
-fn enm(typ: &Ident, item: ItemEnum) -> (Ident, Vec<Ident>, Vec<impl quote::ToTokens>) {
+fn enm(item: ItemEnum) -> (Ident, Vec<Ident>, Vec<impl quote::ToTokens>) {
     let ident = item.ident;
 
     let mut has_vals: Option<bool> = None;
-    let mut vals: Vec<u128> = Vec::with_capacity(item.variants.len());
 
     let mut idents = Vec::with_capacity(item.variants.len());
     let mut exprs = Vec::with_capacity(item.variants.len());
@@ -261,29 +260,14 @@ fn enm(typ: &Ident, item: ItemEnum) -> (Ident, Vec<Ident>, Vec<impl quote::ToTok
         if hv {
             if let Some((_, ref expr)) = v.discriminant.as_ref() {
                 match expr {
-                    syn::Expr::Lit(ref lit) => match lit.lit {
-                        syn::Lit::Int(ref int) => {
-                            let int = int.base10_parse::<u128>().expect("unreachable");
-                            if int.count_ones() == 1 {
-                                if !vals.contains(&int) {
-                                    exprs.push(quote::quote!(#int as #typ));
-                                    vals.push(int);
-                                } else {
-                                    panic!("two flags can't have the same value.");
-                                }
-                            } else {
-                                panic!("only unsigned integers with one 1 bit can be assigned to a flag");
-                            }
-                        }
-                        _ => panic!("only unsigned integers with one 1 bit can be assigned to a flag"),
-                    },
-                    _ => panic!("only unsigned integers with one 1 bit can be assigned to a flag"),
+                    syn::Expr::Lit(ref lit) => exprs.push(quote::quote!(#ident(#lit))),
+                    _ => exprs.push(quote::quote!(#expr)),
                 }
             } else {
                 panic!("the bitmask can either have assigned or default values, not both.");
             }
         } else {
-            exprs.push(quote::quote!(Self::__CONST_TWO.pow(#i as u32)));
+            exprs.push(quote::quote!(#ident(Self::__CONST_TWO.pow(#i as u32))));
         }
     });
 
