@@ -1,8 +1,11 @@
 /*!
 # Bitmask-Enum
+
 A bitmask can have unsigned integer types, the default type is `usize`.
 
-To see a better documentation run `cargo doc --open` and select your `Bitmask`.
+Don't know how to document in `proc-macro` crates
+so if you want see a better documentation
+run `cargo doc --open` and select your `Bitmask` enum.
 
 ```ignore
 #[bitmask] // usize
@@ -17,22 +20,22 @@ enum Bitmask { /* ... */ }
 // contains all values
 const fn all() -> Self;
 
-// self contains all values
+// if self contains all values
 const fn is_all(&self) -> bool;
 
 // contains no value
 const fn none() -> Self;
 
-// self contains no value
+// if self contains no value
 const fn is_none(&self) -> bool;
 
-// self contains one of the other
+// self intersects one of the other
 // (self & other) != 0 || other == 0
-const fn contains(&self, other: Self) -> bool;
+const fn intersects(&self, other: Self) -> bool;
 
 // self contains all of the other
 // (self & other) == other
-const fn contains_all(&self, other: Self) -> bool;
+const fn contains(&self, other: Self) -> bool;
 
 // constant bitwise ops
 const fn not(self) -> Self;
@@ -93,7 +96,7 @@ pub fn bitmask(attr: TokenStream, item: TokenStream) -> TokenStream {
                 Self(!0)
             }
 
-            /// self contains all values
+            /// if self contains all values
             #[inline]
             #vis const fn is_all(&self) -> bool {
                 self.0 == !0
@@ -105,23 +108,23 @@ pub fn bitmask(attr: TokenStream, item: TokenStream) -> TokenStream {
                 Self(0)
             }
 
-            /// self contains no value
+            /// if self contains no value
             #[inline]
             #vis const fn is_none(&self) -> bool {
                 self.0 == 0
             }
 
-            /// self contains one of the other
+            /// self intersects one of the other
             /// `(self & other) != 0 || other == 0`
             #[inline]
-            #vis const fn contains(&self, other: Self) -> bool {
+            #vis const fn intersects(&self, other: Self) -> bool {
                 (self.0 & other.0) != 0 || other.0 == 0
             }
 
             /// self contains all of the other
             /// `(self & other) == other`
             #[inline]
-            #vis const fn contains_all(&self, other: Self) -> bool {
+            #vis const fn contains(&self, other: Self) -> bool {
                 (self.0 & other.0) == other.0
             }
 
@@ -258,15 +261,8 @@ fn enm(item: ItemEnum) -> (Ident, Vec<Ident>, Vec<impl quote::ToTokens>) {
         }
 
         if hv {
-            if let Some((_, ref expr)) = v.discriminant.as_ref() {
-                match expr {
-                    syn::Expr::Lit(ref lit) => exprs.push(quote::quote!(#ident(#lit))),
-                    syn::Expr::Binary(ref bin) => exprs.push(quote::quote!(#ident(#bin))),
-                    _ => exprs.push(quote::quote!(#expr)),
-                }
-            } else {
-                panic!("the bitmask can either have assigned or default values, not both.");
-            }
+            let (_, ref expr) = v.discriminant.as_ref().expect("unreachable");
+            exprs.push(quote::quote!(#expr));
         } else {
             exprs.push(quote::quote!(#ident(Self::__CONST_TWO.pow(#i as u32))));
         }

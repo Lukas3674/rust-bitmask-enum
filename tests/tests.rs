@@ -49,19 +49,19 @@ mod tests {
     }
 
     #[test]
-    fn test_contains() {
+    fn test_intersects() {
         let bm = Bitmask::Flag4;
-        assert_eq!(bm.contains(Bitmask::Flag4), true);
-        assert_eq!(bm.contains(Bitmask::Flag4 | Bitmask::Flag1), true);
-        assert_eq!(bm.contains(Bitmask::Flag1), false);
+        assert_eq!(bm.intersects(Bitmask::Flag4), true);
+        assert_eq!(bm.intersects(Bitmask::Flag4 | Bitmask::Flag1), true);
+        assert_eq!(bm.intersects(Bitmask::Flag1), false);
     }
 
     #[test]
-    fn test_contains_all() {
+    fn test_contains() {
         let bm = Bitmask::Flag4 | Bitmask::Flag6;
-        assert_eq!(bm.contains_all(Bitmask::Flag4), true);
-        assert_eq!(bm.contains_all(Bitmask::Flag4 | Bitmask::Flag6), true);
-        assert_eq!(bm.contains_all(Bitmask::Flag1), false);
-        assert_eq!(bm.contains_all(Bitmask::Flag4 | Bitmask::Flag1), false);
+        assert_eq!(bm.contains(Bitmask::Flag4), true);
+        assert_eq!(bm.contains(Bitmask::Flag4 | Bitmask::Flag6), true);
+        assert_eq!(bm.contains(Bitmask::Flag1), false);
+        assert_eq!(bm.contains(Bitmask::Flag4 | Bitmask::Flag1), false);
     }
 }

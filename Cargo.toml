@@ -1,6 +1,6 @@
 [package]
 name = "bitmask-enum"
-version = "1.0.2"
+version = "1.1.0"
 authors = ["Lukas3674"]
 edition = "2018"
 readme = "README.md"

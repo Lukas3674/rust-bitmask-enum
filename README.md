@@ -40,11 +40,11 @@ fn main() {
 
     println!("{:#010b}", bm); // 0b00000101
 
-    // Does bm contain / intersect CONST_BM
-    println!("{}", bm.contains(CONST_BM)); // true
+    // Does bm intersect one of CONST_BM
+    println!("{}", bm.intersects(CONST_BM)); // true
 
-    // Does bm contain / intersect all of CONST_BM
-    println!("{}", bm.contains_all(CONST_BM)); // false
+    // Does bm contain all of CONST_BM
+    println!("{}", bm.contains(CONST_BM)); // false
 }
 ```
 
@@ -52,26 +52,33 @@ fn main() {
 
 You can assign every flag a custom value.
 
+Because behind the scences `enum Bitmask` gets converted to a `struct Bitmask(u8);` you need to wrap `u8` expressions into a `Self(_)`.
+
 ```rust
 use bitmask_enum::bitmask;
 
 #[bitmask(u8)]
 enum Bitmask {
-    Flag1 = 0b00010000,
-    Flag2 = 0b00000100,
-    Flag3 = 0b00000001,
+    Flag1 = Self(0b00010000),
+    Flag2 = Self(0b00000100),
+    Flag3 = Self(0b00000001),
 
-    // Needs const methods
-    // Self::Flag1 | Self::Flag3    not possible
-    // 0b00010000 | 0b00000001      possible
-    Flag13_1 = 0b00010000 | 0b00000001,
+    Flag13_1 = Self(0b00010000 | 0b00000001),
     Flag13_2 = Self::Flag1.or(Self::Flag3),
+
+    Flag4 = Self({
+        let left = Self::Flag13_1;
+        left.0 | Self::Flag2.0
+    }),
 }
 
 fn main() {
     let bm = Bitmask::Flag1 | Bitmask::Flag3;
+
     println!("{:#010b}", bm); // 0b00010001
     println!("{}", bm == Bitmask::Flag13_1); // true
     println!("{}", bm == Bitmask::Flag13_2); // true
+
+    println!("{:#010b}", Bitmask::Flag4); // 0b00010101
 }
 ```

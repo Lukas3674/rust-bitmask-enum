@@ -18,9 +18,9 @@ fn main() {
 
     println!("{:#010b}", bm); // 0b00000101
 
-    // Does bm contain / intersect CONST_BM
-    println!("{}", bm.contains(CONST_BM)); // true
+    // Does bm intersect one of CONST_BM
+    println!("{}", bm.intersects(CONST_BM)); // true
 
-    // Does bm contain / intersect all of CONST_BM
-    println!("{}", bm.contains_all(CONST_BM)); // false
+    // Does bm contain all of CONST_BM
+    println!("{}", bm.contains(CONST_BM)); // false
 }
