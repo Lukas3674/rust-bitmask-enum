@@ -155,6 +155,7 @@ pub fn bitmask(attr: TokenStream, item: TokenStream) -> TokenStream {
 
         impl std::ops::Not for #ident {
             type Output = Self;
+            #[inline]
             fn not(self) -> Self::Output {
                 Self(self.0.not())
             }
@@ -162,12 +163,14 @@ pub fn bitmask(attr: TokenStream, item: TokenStream) -> TokenStream {
 
         impl std::ops::BitAnd for #ident {
             type Output = Self;
+            #[inline]
             fn bitand(self, rhs: Self) -> Self::Output {
                 Self(self.0.bitand(rhs.0))
             }
         }
 
         impl std::ops::BitAndAssign for #ident {
+            #[inline]
             fn bitand_assign(&mut self, rhs: Self){
                 self.0.bitand_assign(rhs.0)
             }
@@ -175,12 +178,14 @@ pub fn bitmask(attr: TokenStream, item: TokenStream) -> TokenStream {
 
         impl std::ops::BitOr for #ident {
             type Output = Self;
+            #[inline]
             fn bitor(self, rhs: Self) -> Self::Output {
                 Self(self.0.bitor(rhs.0))
             }
         }
 
         impl std::ops::BitOrAssign for #ident {
+            #[inline]
             fn bitor_assign(&mut self, rhs: Self){
                 self.0.bitor_assign(rhs.0)
             }
@@ -188,30 +193,35 @@ pub fn bitmask(attr: TokenStream, item: TokenStream) -> TokenStream {
 
         impl std::ops::BitXor for #ident {
             type Output = Self;
+            #[inline]
             fn bitxor(self, rhs: Self) -> Self::Output {
                 Self(self.0.bitxor(rhs.0))
             }
         }
 
         impl std::ops::BitXorAssign for #ident {
+            #[inline]
             fn bitxor_assign(&mut self, rhs: Self){
                 self.0.bitxor_assign(rhs.0)
             }
         }
 
         impl From<#typ> for #ident {
+            #[inline]
             fn from(val: #typ) -> Self {
                 Self(val)
             }
         }
 
         impl Into<#typ> for #ident {
+            #[inline]
             fn into(self) -> #typ {
                 self.0
             }
         }
 
         impl PartialEq<#typ> for #ident {
+            #[inline]
             fn eq(&self, other: &#typ) -> bool {
                 self.0 == *other
             }
