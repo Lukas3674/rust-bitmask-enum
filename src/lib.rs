@@ -261,6 +261,7 @@ fn enm(item: ItemEnum) -> (Ident, Vec<Ident>, Vec<impl quote::ToTokens>) {
             if let Some((_, ref expr)) = v.discriminant.as_ref() {
                 match expr {
                     syn::Expr::Lit(ref lit) => exprs.push(quote::quote!(#ident(#lit))),
+                    syn::Expr::Binary(ref bin) => exprs.push(quote::quote!(#ident(#bin))),
                     _ => exprs.push(quote::quote!(#expr)),
                 }
             } else {
