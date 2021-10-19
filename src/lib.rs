@@ -59,8 +59,8 @@ impl std::ops::BitOrAssign;
 impl std::ops::BitXor;
 impl std::ops::BitXorAssign;
 
-impl From<#type>;
-impl Into<#type>;
+impl From<#type> for #ident;
+impl From<#ident> for #type;
 
 impl PartialEq<#type>;
 
@@ -213,10 +213,10 @@ pub fn bitmask(attr: TokenStream, item: TokenStream) -> TokenStream {
             }
         }
 
-        impl Into<#typ> for #ident {
+        impl From<#ident> for #typ {
             #[inline]
-            fn into(self) -> #typ {
-                self.0
+            fn from(val: #ident) -> #typ {
+                val.0
             }
         }
 
@@ -266,9 +266,10 @@ fn enm(item: ItemEnum) -> (Ident, Vec<Ident>, Vec<impl quote::ToTokens>) {
             hv
         });
 
-        if hv != v.discriminant.is_some() {
-            panic!("the bitmask can either have assigned or default values, not both.");
-        }
+        assert!(
+            hv == v.discriminant.is_some(),
+            "the bitmask can either have assigned or default values, not both."
+        );
 
         if hv {
             let (_, ref expr) = v.discriminant.as_ref().expect("unreachable");

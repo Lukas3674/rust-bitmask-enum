@@ -64,4 +64,15 @@ mod tests {
         assert_eq!(bm.contains(Bitmask::Flag1), false);
         assert_eq!(bm.contains(Bitmask::Flag4 | Bitmask::Flag1), false);
     }
+
+    #[test]
+    fn test_from() {
+        let mask: usize = 0b100010;
+        let bm = Bitmask::from(mask);
+
+        assert_eq!(bm, Bitmask::Flag1 | Bitmask::Flag5);
+
+        let value: usize = bm.into();
+        assert_eq!(value, mask);
+    }
 }
