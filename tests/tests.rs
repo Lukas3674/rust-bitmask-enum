@@ -4,7 +4,6 @@ mod tests {
 
     #[bitmask]
     enum Bitmask {
-        Flag0,
         Flag1,
         Flag2,
         Flag3,
@@ -13,24 +12,23 @@ mod tests {
         Flag6,
         Flag7,
         Flag8,
-        Flag9,
     }
 
     #[test]
     fn test() {
         let mut bm = Bitmask::none();
-        assert_eq!(bm, 0usize);
+        assert_eq!(bm, 0);
 
         bm |= Bitmask::Flag5;
         assert_eq!(bm, Bitmask::Flag5);
 
-        bm |= Bitmask::Flag1 | Bitmask::Flag9;
-        assert_eq!(bm, 0b1000100010);
+        bm |= Bitmask::Flag1 | Bitmask::Flag8;
+        assert_eq!(bm, 0b10010001);
 
         bm &= !Bitmask::Flag1 & !Bitmask::Flag5;
-        assert_eq!(bm, 0b1000000000);
+        assert_eq!(bm, 0b10000000);
 
-        bm |= !Bitmask::Flag9;
+        bm |= !Bitmask::Flag8;
         assert_eq!(bm.is_all(), true);
     }
 
@@ -70,9 +68,60 @@ mod tests {
         let mask: usize = 0b100010;
         let bm = Bitmask::from(mask);
 
-        assert_eq!(bm, Bitmask::Flag1 | Bitmask::Flag5);
+        assert_eq!(bm, Bitmask::Flag2 | Bitmask::Flag6);
 
         let value: usize = bm.into();
         assert_eq!(value, mask);
+    }
+
+    #[test]
+    fn test_types() {
+        #[bitmask(usize)]
+        enum BitmaskUsize {
+            Flag1,
+            Flag2,
+        }
+        assert_eq!(BitmaskUsize::Flag1, 0b01);
+        assert_eq!(BitmaskUsize::Flag2, 0b10);
+
+        #[bitmask(u8)]
+        enum BitmaskU8 {
+            Flag1,
+            Flag2,
+        }
+        assert_eq!(BitmaskU8::Flag1, 0b01);
+        assert_eq!(BitmaskU8::Flag2, 0b10);
+
+        #[bitmask(u16)]
+        enum BitmaskU16 {
+            Flag1,
+            Flag2,
+        }
+        assert_eq!(BitmaskU16::Flag1, 0b01);
+        assert_eq!(BitmaskU16::Flag2, 0b10);
+
+        #[bitmask(u32)]
+        enum BitmaskU32 {
+            Flag1,
+            Flag2,
+        }
+        assert_eq!(BitmaskU32::Flag1, 0b01);
+        assert_eq!(BitmaskU32::Flag2, 0b10);
+
+        #[bitmask(u64)]
+        enum BitmaskU64 {
+            Flag1,
+            Flag2,
+        }
+        assert_eq!(BitmaskU64::Flag1, 0b01);
+        assert_eq!(BitmaskU64::Flag2, 0b10);
+
+        #[bitmask(u128)]
+        enum BitmaskU128 {
+            Flag1,
+            Flag2,
+        }
+        assert_eq!(BitmaskU128::Flag1, 0b01);
+        assert_eq!(BitmaskU128::Flag2, 0b10);
     }
 }
