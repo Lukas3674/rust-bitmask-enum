@@ -3,18 +3,18 @@
 [![API](https://docs.rs/bitmask-enum/badge.svg)](https://docs.rs/bitmask-enum)
 [![Crate](https://img.shields.io/crates/v/bitmask-enum.svg)](https://crates.io/crates/bitmask-enum)
 
-A bitmask enum attribute macro.
+A bitmask enum attribute macro, to turn an enum into a bitmask.
 
 A bitmask can have unsigned integer types, the default type is `usize`.
 
-Don't know how to document in `proc-macro` crates so if you want see a better documentation run `cargo doc --open` and select your `Bitmask` enum.
+Don't know how to document in `proc-macro` crates so if you want to see a better documentation, run `cargo doc --open` and select your `#[bitmask]` enum.
 
 ```rust
 #[bitmask] // usize
 enum Bitmask { /* ... */ }
 
 #[bitmask(u8)] // u8
-enum Bitmask { /* ... */ }
+enum BitmaskU8 { /* ... */ }
 ```
 
 ## Example
@@ -32,20 +32,18 @@ enum Bitmask {
 // bitmask has const bitwise operator methods
 const CONST_BM: Bitmask = Bitmask::Flag2.or(Bitmask::Flag3);
 
-fn main() {
-    println!("{:#010b}", CONST_BM); // 0b00000110
+println!("{:#010b}", CONST_BM); // 0b00000110
 
-    // Bitmask that contains Flag1 and Flag3
-    let bm = Bitmask::Flag1 | Bitmask::Flag3;
+// Bitmask that contains Flag1 and Flag3
+let bm = Bitmask::Flag1 | Bitmask::Flag3;
 
-    println!("{:#010b}", bm); // 0b00000101
+println!("{:#010b}", bm); // 0b00000101
 
-    // Does bm intersect one of CONST_BM
-    println!("{}", bm.intersects(CONST_BM)); // true
+// Does bm intersect one of CONST_BM
+println!("{}", bm.intersects(CONST_BM)); // true
 
-    // Does bm contain all of CONST_BM
-    println!("{}", bm.contains(CONST_BM)); // false
-}
+// Does bm contain all of CONST_BM
+println!("{}", bm.contains(CONST_BM)); // false
 ```
 
 ## Custom Values
@@ -72,13 +70,11 @@ enum Bitmask {
     }),
 }
 
-fn main() {
-    let bm = Bitmask::Flag1 | Bitmask::Flag3;
+let bm = Bitmask::Flag1 | Bitmask::Flag3;
 
-    println!("{:#010b}", bm); // 0b00010001
-    println!("{}", bm == Bitmask::Flag13_1); // true
-    println!("{}", bm == Bitmask::Flag13_2); // true
+println!("{:#010b}", bm); // 0b00010001
+println!("{}", bm == Bitmask::Flag13_1); // true
+println!("{}", bm == Bitmask::Flag13_2); // true
 
-    println!("{:#010b}", Bitmask::Flag4); // 0b00010101
-}
+println!("{:#010b}", Bitmask::Flag4); // 0b00010101
 ```

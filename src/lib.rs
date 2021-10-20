@@ -1,18 +1,80 @@
 /*!
 # Bitmask-Enum
 
+A bitmask enum attribute macro, to turn an enum into a bitmask.
+
 A bitmask can have unsigned integer types, the default type is `usize`.
 
-Don't know how to document in `proc-macro` crates
-so if you want see a better documentation
-run `cargo doc --open` and select your `Bitmask` enum.
+```
+use bitmask_enum::bitmask;
 
-```ignore
 #[bitmask] // usize
 enum Bitmask { /* ... */ }
 
 #[bitmask(u8)] // u8
-enum Bitmask { /* ... */ }
+enum BitmaskU8 { /* ... */ }
+```
+
+## Example
+
+```
+use bitmask_enum::bitmask;
+
+#[bitmask(u8)]
+enum Bitmask {
+    Flag1, // defaults to 0d00000001
+    Flag2, // defaults to 0d00000010
+    Flag3, // defaults to 0d00000100
+}
+
+// bitmask has const bitwise operator methods
+const CONST_BM: Bitmask = Bitmask::Flag2.or(Bitmask::Flag3);
+
+println!("{:#010b}", CONST_BM); // 0b00000110
+
+// Bitmask that contains Flag1 and Flag3
+let bm = Bitmask::Flag1 | Bitmask::Flag3;
+
+println!("{:#010b}", bm); // 0b00000101
+
+// Does bm intersect one of CONST_BM
+println!("{}", bm.intersects(CONST_BM)); // true
+
+// Does bm contain all of CONST_BM
+println!("{}", bm.contains(CONST_BM)); // false
+```
+
+## Custom Values
+
+You can assign every flag a custom value.
+
+Because behind the scences `enum Bitmask` gets converted to a `struct Bitmask(u8);` you need to wrap `u8` expressions into a `Self(_)`.
+
+```
+use bitmask_enum::bitmask;
+
+#[bitmask(u8)]
+enum Bitmask {
+    Flag1 = Self(0b00010000),
+    Flag2 = Self(0b00000100),
+    Flag3 = Self(0b00000001),
+
+    Flag13_1 = Self(0b00010000 | 0b00000001),
+    Flag13_2 = Self::Flag1.or(Self::Flag3),
+
+    Flag4 = Self({
+        let left = Self::Flag13_1;
+        left.0 | Self::Flag2.0
+    }),
+}
+
+let bm = Bitmask::Flag1 | Bitmask::Flag3;
+
+println!("{:#010b}", bm); // 0b00010001
+println!("{}", bm == Bitmask::Flag13_1); // true
+println!("{}", bm == Bitmask::Flag13_2); // true
+
+println!("{:#010b}", Bitmask::Flag4); // 0b00010101
 ```
 
 ## Implemented Methods
@@ -71,6 +133,21 @@ impl std::fmt::Binary;
 use proc_macro::TokenStream;
 use syn::{parse_macro_input, Ident, ItemEnum};
 
+/**
+# Bitmask-Enum
+
+A bitmask can have unsigned integer types, the default type is `usize`.
+
+```
+use bitmask_enum::bitmask;
+
+#[bitmask] // usize
+enum Bitmask { /* ... */ }
+
+#[bitmask(u8)] // u8
+enum BitmaskU8 { /* ... */ }
+```
+*/
 #[proc_macro_attribute]
 pub fn bitmask(attr: TokenStream, item: TokenStream) -> TokenStream {
     let typ = quote::format_ident!("{}", typ(attr));
@@ -85,9 +162,6 @@ pub fn bitmask(attr: TokenStream, item: TokenStream) -> TokenStream {
 
         #[allow(non_upper_case_globals)]
         impl #ident {
-            #[doc(hidden)]
-            const __CONST_TWO: #typ = 2;
-
             #(#vis const #idents: #ident = #exprs;)*
 
             /// contains all values
@@ -275,7 +349,7 @@ fn enm(item: ItemEnum) -> (Ident, Vec<Ident>, Vec<impl quote::ToTokens>) {
             let (_, ref expr) = v.discriminant.as_ref().expect("unreachable");
             exprs.push(quote::quote!(#expr));
         } else {
-            exprs.push(quote::quote!(#ident(Self::__CONST_TWO.pow(#i as u32))));
+            exprs.push(quote::quote!(#ident(1 << #i)));
         }
     });
 
