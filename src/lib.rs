@@ -110,22 +110,23 @@ const fn xor(self, other: Self) -> Self;
 ```ignore
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 
-impl std::ops::Not;
+impl core::ops::Not;
 
-impl std::ops::BitAnd;
-impl std::ops::BitAndAssign;
+impl core::ops::BitAnd;
+impl core::ops::BitAndAssign;
 
-impl std::ops::BitOr;
-impl std::ops::BitOrAssign;
+impl core::ops::BitOr;
+impl core::ops::BitOrAssign;
 
-impl std::ops::BitXor;
-impl std::ops::BitXorAssign;
+impl core::ops::BitXor;
+impl core::ops::BitXorAssign;
 
 impl From<#type> for #ident;
 impl From<#ident> for #type;
 
 impl PartialEq<#type>;
 
+#[cfg(feature = "std")]
 impl std::fmt::Binary;
 ```
 */
@@ -227,7 +228,7 @@ pub fn bitmask(attr: TokenStream, item: TokenStream) -> TokenStream {
             }
         }
 
-        impl std::ops::Not for #ident {
+        impl core::ops::Not for #ident {
             type Output = Self;
             #[inline]
             fn not(self) -> Self::Output {
@@ -235,7 +236,7 @@ pub fn bitmask(attr: TokenStream, item: TokenStream) -> TokenStream {
             }
         }
 
-        impl std::ops::BitAnd for #ident {
+        impl core::ops::BitAnd for #ident {
             type Output = Self;
             #[inline]
             fn bitand(self, rhs: Self) -> Self::Output {
@@ -243,14 +244,14 @@ pub fn bitmask(attr: TokenStream, item: TokenStream) -> TokenStream {
             }
         }
 
-        impl std::ops::BitAndAssign for #ident {
+        impl core::ops::BitAndAssign for #ident {
             #[inline]
             fn bitand_assign(&mut self, rhs: Self){
                 self.0.bitand_assign(rhs.0)
             }
         }
 
-        impl std::ops::BitOr for #ident {
+        impl core::ops::BitOr for #ident {
             type Output = Self;
             #[inline]
             fn bitor(self, rhs: Self) -> Self::Output {
@@ -258,14 +259,14 @@ pub fn bitmask(attr: TokenStream, item: TokenStream) -> TokenStream {
             }
         }
 
-        impl std::ops::BitOrAssign for #ident {
+        impl core::ops::BitOrAssign for #ident {
             #[inline]
             fn bitor_assign(&mut self, rhs: Self){
                 self.0.bitor_assign(rhs.0)
             }
         }
 
-        impl std::ops::BitXor for #ident {
+        impl core::ops::BitXor for #ident {
             type Output = Self;
             #[inline]
             fn bitxor(self, rhs: Self) -> Self::Output {
@@ -273,7 +274,7 @@ pub fn bitmask(attr: TokenStream, item: TokenStream) -> TokenStream {
             }
         }
 
-        impl std::ops::BitXorAssign for #ident {
+        impl core::ops::BitXorAssign for #ident {
             #[inline]
             fn bitxor_assign(&mut self, rhs: Self){
                 self.0.bitxor_assign(rhs.0)
@@ -301,6 +302,7 @@ pub fn bitmask(attr: TokenStream, item: TokenStream) -> TokenStream {
             }
         }
 
+        #[cfg(feature = "std")]
         impl std::fmt::Binary for #ident {
             fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
                 self.0.fmt(f)
