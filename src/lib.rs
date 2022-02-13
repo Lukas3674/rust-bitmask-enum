@@ -126,8 +126,7 @@ impl From<#ident> for #type;
 
 impl PartialEq<#type>;
 
-#[cfg(feature = "std")]
-impl std::fmt::Binary;
+impl core::fmt::Binary;
 ```
 */
 
@@ -302,9 +301,8 @@ pub fn bitmask(attr: TokenStream, item: TokenStream) -> TokenStream {
             }
         }
 
-        #[cfg(feature = "std")]
-        impl std::fmt::Binary for #ident {
-            fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        impl core::fmt::Binary for #ident {
+            fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
                 self.0.fmt(f)
             }
         }
