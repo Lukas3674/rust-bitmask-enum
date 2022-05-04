@@ -3,7 +3,7 @@
 
 A bitmask enum attribute macro, to turn an enum into a bitmask.
 
-A bitmask can have (unsigned) integer types, the default type is `usize`.
+A bitmask can have (un)signed integer types, the default type is `usize`.
 
 ```
 use bitmask_enum::bitmask;
@@ -358,7 +358,7 @@ fn typ(attr: TokenStream) -> String {
         match typ.as_str() {
             "u8" | "u16" | "u32" | "u64" | "u128" | "usize" => (),
             "i8" | "i16" | "i32" | "i64" | "i128" | "isize" => (),
-            _ => panic!("type can only be an (unsigned) integer."),
+            _ => panic!("type can only be an (un)signed integer."),
         }
         typ
     }

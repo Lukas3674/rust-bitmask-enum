@@ -5,7 +5,7 @@
 
 A bitmask enum attribute macro, to turn an enum into a bitmask.
 
-A bitmask can have (unsigned) integer types, the default type is `usize`.
+A bitmask can have (un)signed integer types, the default type is `usize`.
 
 First created because I wanted something simple, evolved with inspiration from
 the [bitflags](https://crates.io/crates/bitflags) crate, which might be something
