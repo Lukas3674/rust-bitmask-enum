@@ -1,14 +1,14 @@
 [package]
 name = "bitmask-enum"
-version = "1.1.3"
-authors = ["Lukas3674 <lukashassler.lh@gmail.com>"]
-edition = "2018"
+version = "2.0.0"
+authors = ["Lukas3674 <lukashassler@web.de>"]
+edition = "2021"
 readme = "README.md"
 repository = "https://github.com/Lukas3674/rust-bitmask-enum"
 documentation = "https://docs.rs/bitmask-enum"
 license = "MIT OR Apache-2.0"
 description = "A bitmask enum attribute macro"
-keywords = ["bitmask", "enum", "macro"]
+keywords = ["bitmask", "enum", "macro", "no-std"]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
