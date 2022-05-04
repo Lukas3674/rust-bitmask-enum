@@ -7,6 +7,12 @@ enum Bitmask {
     Flag3, // defaults to 0d00000100
 }
 
+impl Bitmask {
+    fn f1_or_f3(&self) -> bool {
+        self.contains(Self::Flag1 | Self::Flag3)
+    }
+}
+
 // bitmask has const bitwise operator methods
 const CONST_BM: Bitmask = Bitmask::Flag2.or(Bitmask::Flag3);
 
@@ -23,4 +29,7 @@ fn main() {
 
     // Does bm contain all of CONST_BM
     println!("{}", bm.contains(CONST_BM)); // false
+
+    // Does bm contain all of CONST_BM
+    println!("{}", bm.f1_or_f3()); // true
 }

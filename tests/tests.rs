@@ -33,6 +33,12 @@ mod tests {
     }
 
     #[test]
+    fn test_bits() {
+        let all = Bitmask::all();
+        assert_eq!(all.bits(), std::usize::MAX);
+    }
+
+    #[test]
     fn test_all() {
         let all = Bitmask::all();
         assert_eq!(all.is_all(), true);
@@ -118,6 +124,53 @@ mod tests {
 
         #[bitmask(u128)]
         enum BitmaskU128 {
+            Flag1,
+            Flag2,
+        }
+        assert_eq!(BitmaskU128::Flag1, 0b01);
+        assert_eq!(BitmaskU128::Flag2, 0b10);
+        #[bitmask(isize)]
+        enum BitmaskIsize {
+            Flag1,
+            Flag2,
+        }
+        assert_eq!(BitmaskUsize::Flag1, 0b01);
+        assert_eq!(BitmaskUsize::Flag2, 0b10);
+
+        #[bitmask(i8)]
+        enum BitmaskI8 {
+            Flag1,
+            Flag2,
+        }
+        assert_eq!(BitmaskU8::Flag1, 0b01);
+        assert_eq!(BitmaskU8::Flag2, 0b10);
+
+        #[bitmask(i16)]
+        enum BitmaskI16 {
+            Flag1,
+            Flag2,
+        }
+        assert_eq!(BitmaskU16::Flag1, 0b01);
+        assert_eq!(BitmaskU16::Flag2, 0b10);
+
+        #[bitmask(i32)]
+        enum BitmaskI32 {
+            Flag1,
+            Flag2,
+        }
+        assert_eq!(BitmaskU32::Flag1, 0b01);
+        assert_eq!(BitmaskU32::Flag2, 0b10);
+
+        #[bitmask(i64)]
+        enum BitmaskI64 {
+            Flag1,
+            Flag2,
+        }
+        assert_eq!(BitmaskU64::Flag1, 0b01);
+        assert_eq!(BitmaskU64::Flag2, 0b10);
+
+        #[bitmask(i128)]
+        enum BitmaskI128 {
             Flag1,
             Flag2,
         }
