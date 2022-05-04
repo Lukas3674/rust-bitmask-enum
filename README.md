@@ -1,7 +1,6 @@
 # Bitmask-Enum
 
-[![API](https://docs.rs/bitmask-enum/badge.svg)](https://docs.rs/bitmask-enum)
-[![Crate](https://img.shields.io/crates/v/bitmask-enum.svg)](https://crates.io/crates/bitmask-enum)
+[![API](https://docs.rs/bitmask-enum/badge.svg)](https://docs.rs/bitmask-enum) [![Crate](https://img.shields.io/crates/v/bitmask-enum.svg)](https://crates.io/crates/bitmask-enum)
 
 A bitmask enum attribute macro, to turn an enum into a bitmask.
 
