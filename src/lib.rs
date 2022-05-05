@@ -27,9 +27,10 @@ enum Bitmask {
     Flag3, // defaults to 0d00000100
 }
 
+// It is possible to impl on the bitmask and use its
 impl Bitmask {
-    fn f1_or_f3(&self) -> bool {
-        self.contains(Self::Flag1 | Self::Flag3)
+    fn _set_to(&mut self, val: u8) {
+        self.bits = val
     }
 }
 
@@ -48,9 +49,6 @@ println!("{}", bm.intersects(CONST_BM)); // true
 
 // Does bm contain all of CONST_BM
 println!("{}", bm.contains(CONST_BM)); // false
-
-// Does bm contain all of CONST_BM
-println!("{}", bm.f1_or_f3()); // true
 ```
 
 ## Custom Values
