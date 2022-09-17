@@ -142,7 +142,7 @@ impl core::fmt::Octal;
 */
 
 use proc_macro::TokenStream;
-use syn::{parse_macro_input, Ident, ItemEnum};
+use syn::{parse_macro_input, Ident, ItemEnum, Attribute};
 
 /**
 # Bitmask-Enum
@@ -164,10 +164,14 @@ pub fn bitmask(attr: TokenStream, item: TokenStream) -> TokenStream {
     let typ = quote::format_ident!("{}", typ(attr));
 
     let item = parse_macro_input!(item as ItemEnum);
+
     let vis = item.vis.clone();
-    let (ident, idents, exprs) = enm(item);
+    let attr = item.attrs.clone();
+
+    let (ident, attrs, idents, exprs) = enm(item);
 
     let enm = quote::quote! {
+        #(#attr)*
         #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
         #vis struct #ident {
             bits: #typ,
@@ -175,7 +179,10 @@ pub fn bitmask(attr: TokenStream, item: TokenStream) -> TokenStream {
 
         #[allow(non_upper_case_globals)]
         impl #ident {
-            #(#vis const #idents: #ident = #exprs;)*
+            #(
+                #(#attrs)*
+                #vis const #idents: #ident = #exprs;
+            )*
 
             /// returns the underlying bits
             #[inline]
@@ -362,11 +369,12 @@ fn typ(attr: TokenStream) -> String {
     }
 }
 
-fn enm(item: ItemEnum) -> (Ident, Vec<Ident>, Vec<impl quote::ToTokens>) {
+fn enm(item: ItemEnum) -> (Ident, Vec<Vec<Attribute>>, Vec<Ident>, Vec<impl quote::ToTokens>) {
     let ident = item.ident;
 
     let mut has_vals: Option<bool> = None;
 
+    let mut attrs = Vec::with_capacity(item.variants.len());
     let mut idents = Vec::with_capacity(item.variants.len());
     let mut exprs = Vec::with_capacity(item.variants.len());
     item.variants.iter().enumerate().for_each(|(i, v)| {
@@ -383,6 +391,8 @@ fn enm(item: ItemEnum) -> (Ident, Vec<Ident>, Vec<impl quote::ToTokens>) {
             "the bitmask can either have assigned or default values, not both."
         );
 
+        attrs.push(v.attrs.clone());
+
         if hv {
             let (_, ref expr) = v.discriminant.as_ref().expect("unreachable");
             exprs.push(quote::quote!(Self { bits: #expr }));
@@ -391,5 +401,5 @@ fn enm(item: ItemEnum) -> (Ident, Vec<Ident>, Vec<impl quote::ToTokens>) {
         }
     });
 
-    (ident, idents, exprs)
+    (ident, attrs, idents, exprs)
 }
