@@ -92,7 +92,7 @@ fn main() {
 ```
 
 ## Implemented Methods
-```rust
+```rust,ignore
 // returns the underlying bits
 const fn bits(&self) -> #type {
 
@@ -124,7 +124,7 @@ const fn xor(self, other: Self) -> Self;
 ```
 
 ## Implemented Traits
-```rust
+```rust,ignore
 #[repr(transparent)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 
