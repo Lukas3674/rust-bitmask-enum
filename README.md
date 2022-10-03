@@ -125,6 +125,7 @@ const fn xor(self, other: Self) -> Self;
 
 ## Implemented Traits
 ```rust
+#[repr(transparent)]
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 
 impl core::ops::Not;
