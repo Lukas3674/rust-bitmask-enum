@@ -1,6 +1,5 @@
-
+use proc_macro::{Span, TokenStream};
 use syn::{Ident, ItemEnum};
-use proc_macro::{TokenStream, Span};
 
 pub fn parse(attr: TokenStream, item: ItemEnum) -> TokenStream {
     let typ = parse_typ(attr);
@@ -9,26 +8,36 @@ pub fn parse(attr: TokenStream, item: ItemEnum) -> TokenStream {
     let attr = item.attrs;
     let ident = item.ident;
 
-    let mut has_vals: Option<bool> = None;
+    let has_vals: bool = item
+        .variants
+        .first()
+        .map_or(false, |v| v.discriminant.is_some());
 
     let attrs = item.variants.iter().map(|v| &v.attrs);
+    let inverted_attrs = attrs.clone();
     let idents = item.variants.iter().map(|v| &v.ident);
     let exprs = item.variants.iter().enumerate().map(|(i, v)| {
-        let hv = has_vals.unwrap_or_else(|| {
-            let hv = v.discriminant.is_some();
-            has_vals = Some(hv);
-            hv
-        });
-
-        if hv != v.discriminant.is_some() {
+        if has_vals != v.discriminant.is_some() {
             panic!("the bitmask can either have assigned or default values, not both.")
         }
 
-        if hv {
+        if has_vals {
             let (_, ref expr) = v.discriminant.as_ref().expect("unreachable");
             quote::quote!(Self { bits: #expr })
         } else {
             quote::quote!(Self { bits: 1 << #i })
+        }
+    });
+    let inverted_idents = item
+        .variants
+        .iter()
+        .map(|v| Ident::new(&format!("Not{}", v.ident), ident.span()));
+    let inverted_exprs = item.variants.iter().enumerate().map(|(i, v)| {
+        if has_vals {
+            let (_, ref expr) = v.discriminant.as_ref().expect("unreachable");
+            quote::quote!(Self { bits: #expr ^ !0 })
+        } else {
+            quote::quote!(Self { bits: (1 << #i) ^ !0 })
         }
     });
 
@@ -45,6 +54,10 @@ pub fn parse(attr: TokenStream, item: ItemEnum) -> TokenStream {
             #(
                 #(#attrs)*
                 #vis const #idents: #ident = #exprs;
+            )*
+            #(
+                #(#inverted_attrs)*
+                #vis const #inverted_idents: #ident = #inverted_exprs;
             )*
 
             /// returns the underlying bits

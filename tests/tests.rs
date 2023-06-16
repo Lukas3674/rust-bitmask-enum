@@ -81,6 +81,21 @@ mod tests {
     }
 
     #[test]
+    fn test_inverted() {
+        #[bitmask]
+        enum Bitmask {
+            Flag1,
+            Flag2,
+            Flag3,
+            Flag4,
+        }
+        assert_eq!(Bitmask::NotFlag1, Bitmask::all().xor(Bitmask::Flag1));
+        assert_eq!(Bitmask::NotFlag2, Bitmask::all().xor(Bitmask::Flag2));
+        assert_eq!(Bitmask::NotFlag3, Bitmask::all().xor(Bitmask::Flag3));
+        assert_eq!(Bitmask::NotFlag4, Bitmask::all().xor(Bitmask::Flag4));
+    }
+
+    #[test]
     fn test_types() {
         #[bitmask(usize)]
         enum BitmaskUsize {
