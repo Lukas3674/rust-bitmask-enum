@@ -35,7 +35,7 @@ pub fn parse(attr: TokenStream, item: ItemEnum) -> TokenStream {
             #vis const #variant_ident: #ident = #expr;
         );
         if args.inverted_flags {
-            let inverted_variant_ident = Ident::new(&format!("{}Inverted", v.ident), ident.span());
+            let inverted_variant_ident = Ident::new(&format!("Inverted{}", v.ident), ident.span());
             let inverted_expr = if has_vals {
                 let (_, ref expr) = v.discriminant.as_ref().expect("unreachable");
                 quote::quote!(Self { bits: #expr ^ !0 })

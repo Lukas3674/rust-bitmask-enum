@@ -90,19 +90,19 @@ mod tests {
             Flag4,
         }
         assert_eq!(
-            BitmaskInverted::Flag1Inverted,
+            BitmaskInverted::InvertedFlag1,
             BitmaskInverted::all().xor(BitmaskInverted::Flag1)
         );
         assert_eq!(
-            BitmaskInverted::Flag2Inverted,
+            BitmaskInverted::InvertedFlag2,
             BitmaskInverted::all().xor(BitmaskInverted::Flag2)
         );
         assert_eq!(
-            BitmaskInverted::Flag3Inverted,
+            BitmaskInverted::InvertedFlag3,
             BitmaskInverted::all().xor(BitmaskInverted::Flag3)
         );
         assert_eq!(
-            BitmaskInverted::Flag4Inverted,
+            BitmaskInverted::InvertedFlag4,
             BitmaskInverted::all().xor(BitmaskInverted::Flag4)
         );
     }
@@ -114,24 +114,24 @@ mod tests {
             Flag1,
             Flag2,
         }
-        assert_eq!(BitmaskUsize::Flag1Inverted, 0b01 ^ !0);
-        assert_eq!(BitmaskUsize::Flag2Inverted, 0b10 ^ !0);
+        assert_eq!(BitmaskUsize::InvertedFlag1, 0b01 ^ !0);
+        assert_eq!(BitmaskUsize::InvertedFlag2, 0b10 ^ !0);
 
         #[bitmask(inverted_flags, u8)]
         enum BitmaskU8 {
             Flag1,
             Flag2,
         }
-        assert_eq!(BitmaskU8::Flag1Inverted, 0b11111110);
-        assert_eq!(BitmaskU8::Flag2Inverted, 0b11111101);
+        assert_eq!(BitmaskU8::InvertedFlag1, 0b11111110);
+        assert_eq!(BitmaskU8::InvertedFlag2, 0b11111101);
 
         #[bitmask(i16, inverted_flags)]
         enum BitmaskI16 {
             Flag1,
             Flag2,
         }
-        assert_eq!(BitmaskI16::Flag1Inverted, 0b1111111111111110u16 as i16);
-        assert_eq!(BitmaskI16::Flag2Inverted, 0b1111111111111101u16 as i16);
+        assert_eq!(BitmaskI16::InvertedFlag1, 0b1111111111111110u16 as i16);
+        assert_eq!(BitmaskI16::InvertedFlag2, 0b1111111111111101u16 as i16);
     }
 
     #[test]
