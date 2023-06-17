@@ -1,8 +1,12 @@
 use proc_macro::{Span, TokenStream};
-use syn::{Ident, ItemEnum};
+use syn::{
+    parse::{Parse, ParseStream},
+    Ident, ItemEnum, Token,
+};
 
 pub fn parse(attr: TokenStream, item: ItemEnum) -> TokenStream {
-    let typ = parse_typ(attr);
+    let args = parse_args(attr);
+    let typ = args.typ;
 
     let vis = item.vis;
     let attr = item.attrs;
@@ -13,32 +17,38 @@ pub fn parse(attr: TokenStream, item: ItemEnum) -> TokenStream {
         .first()
         .map_or(false, |v| v.discriminant.is_some());
 
-    let attrs = item.variants.iter().map(|v| &v.attrs);
-    let inverted_attrs = attrs.clone();
-    let idents = item.variants.iter().map(|v| &v.ident);
-    let exprs = item.variants.iter().enumerate().map(|(i, v)| {
+    let flag_consts = item.variants.iter().enumerate().map(|(i, v)| {
         if has_vals != v.discriminant.is_some() {
             panic!("the bitmask can either have assigned or default values, not both.")
         }
-
-        if has_vals {
+        let variant_attrs = &v.attrs;
+        let variant_ident = &v.ident;
+        let expr = if has_vals {
             let (_, ref expr) = v.discriminant.as_ref().expect("unreachable");
             quote::quote!(Self { bits: #expr })
         } else {
             quote::quote!(Self { bits: 1 << #i })
+        };
+
+        let mut out = quote::quote!(
+            #(#variant_attrs)*
+            #vis const #variant_ident: #ident = #expr;
+        );
+        if args.inverted_flags {
+            let inverted_variant_ident = Ident::new(&format!("{}Inverted", v.ident), ident.span());
+            let inverted_expr = if has_vals {
+                let (_, ref expr) = v.discriminant.as_ref().expect("unreachable");
+                quote::quote!(Self { bits: #expr ^ !0 })
+            } else {
+                quote::quote!(Self { bits: (1 << #i) ^ !0 })
+            };
+            out = quote::quote!(
+                #out
+                #(#variant_attrs)*
+                #vis const #inverted_variant_ident: #ident = #inverted_expr;
+            );
         }
-    });
-    let inverted_idents = item
-        .variants
-        .iter()
-        .map(|v| Ident::new(&format!("Not{}", v.ident), ident.span()));
-    let inverted_exprs = item.variants.iter().enumerate().map(|(i, v)| {
-        if has_vals {
-            let (_, ref expr) = v.discriminant.as_ref().expect("unreachable");
-            quote::quote!(Self { bits: #expr ^ !0 })
-        } else {
-            quote::quote!(Self { bits: (1 << #i) ^ !0 })
-        }
+        out
     });
 
     TokenStream::from(quote::quote! {
@@ -51,14 +61,7 @@ pub fn parse(attr: TokenStream, item: ItemEnum) -> TokenStream {
 
         #[allow(non_upper_case_globals)]
         impl #ident {
-            #(
-                #(#attrs)*
-                #vis const #idents: #ident = #exprs;
-            )*
-            #(
-                #(#inverted_attrs)*
-                #vis const #inverted_idents: #ident = #inverted_exprs;
-            )*
+            #(#flag_consts)*
 
             /// returns the underlying bits
             #[inline]
@@ -233,20 +236,80 @@ pub fn parse(attr: TokenStream, item: ItemEnum) -> TokenStream {
     })
 }
 
-fn parse_typ(attr: TokenStream) -> Ident {
-    if attr.is_empty() {
-        Ident::new("usize", Span::call_site().into())
-    } else {
-        match syn::parse::<Ident>(attr) {
-            Ok(ident) => {
-                match ident.to_string().as_str() {
-                    "u8" | "u16" | "u32" | "u64" | "u128" | "usize" => (),
-                    "i8" | "i16" | "i32" | "i64" | "i128" | "isize" => (),
-                    _ => panic!("type can only be an (un)signed integer."),
-                }
-                ident
-            }
-            Err(_) => panic!("type can only be an (un)signed integer."),
+struct BitmaskArgs {
+    pub typ: Ident,
+    pub inverted_flags: bool,
+}
+
+impl BitmaskArgs {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    pub fn typ(mut self, typ: Ident) -> Self {
+        self.typ = typ;
+        self
+    }
+
+    pub fn inverted_flags(mut self, inverted_flags: bool) -> Self {
+        self.inverted_flags = inverted_flags;
+        self
+    }
+}
+
+impl Default for BitmaskArgs {
+    fn default() -> Self {
+        Self {
+            typ: Ident::new("usize", Span::call_site().into()),
+            inverted_flags: false,
         }
     }
+}
+
+mod kw {
+    syn::custom_keyword!(inverted_flags);
+}
+
+impl Parse for BitmaskArgs {
+    fn parse(input: ParseStream) -> syn::Result<Self> {
+        let mut bitmask_args = Self::new();
+        loop {
+            if input.is_empty() {
+                break;
+            }
+
+            let lookahead = input.lookahead1();
+            if lookahead.peek(kw::inverted_flags) {
+                input.parse::<kw::inverted_flags>()?;
+                bitmask_args = bitmask_args.inverted_flags(true);
+            } else if lookahead.peek(Ident) {
+                let ident = input.parse::<Ident>()?;
+                match ident.to_string().as_str() {
+                    #[rustfmt::skip]
+                    "u8" | "u16" | "u32" | "u64" | "u128" | "usize" |
+                    "i8" | "i16" | "i32" | "i64" | "i128" | "isize" => {
+                        bitmask_args = bitmask_args.typ(ident);
+                    }
+                    _ => panic!("type can only be an (un)signed integer."),
+                }
+            }
+
+            if input.is_empty() {
+                break;
+            }
+
+            input.parse::<Token!(,)>()?;
+        }
+        Ok(bitmask_args)
+    }
+}
+
+fn parse_args(args: TokenStream) -> BitmaskArgs {
+    let bitmask_args = match syn::parse::<BitmaskArgs>(args) {
+        Ok(ok) => ok,
+        Err(err) => {
+            panic!("Could not parse attribute: {}", err);
+        }
+    };
+    bitmask_args
 }
