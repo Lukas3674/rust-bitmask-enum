@@ -82,7 +82,7 @@ mod tests {
 
     #[test]
     fn test_inverted() {
-        #[bitmask(inverted_flags)]
+        #[bitmask(config = [inverted_flags])]
         enum BitmaskInverted {
             Flag1,
             Flag2,
@@ -109,7 +109,7 @@ mod tests {
 
     #[test]
     fn test_type_with_inverted() {
-        #[bitmask(usize, inverted_flags)]
+        #[bitmask(usize, config = [inverted_flags])]
         enum BitmaskUsize {
             Flag1,
             Flag2,
@@ -117,7 +117,7 @@ mod tests {
         assert_eq!(BitmaskUsize::InvertedFlag1, 0b01 ^ !0);
         assert_eq!(BitmaskUsize::InvertedFlag2, 0b10 ^ !0);
 
-        #[bitmask(inverted_flags, u8)]
+        #[bitmask(config = [inverted_flags], u8)]
         enum BitmaskU8 {
             Flag1,
             Flag2,
@@ -125,7 +125,7 @@ mod tests {
         assert_eq!(BitmaskU8::InvertedFlag1, 0b11111110);
         assert_eq!(BitmaskU8::InvertedFlag2, 0b11111101);
 
-        #[bitmask(i16, inverted_flags)]
+        #[bitmask(i16, config = [inverted_flags])]
         enum BitmaskI16 {
             Flag1,
             Flag2,

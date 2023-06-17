@@ -1,5 +1,6 @@
 use proc_macro::{Span, TokenStream};
 use syn::{
+    bracketed,
     parse::{Parse, ParseStream},
     Ident, ItemEnum, Token,
 };
@@ -16,6 +17,7 @@ pub fn parse(attr: TokenStream, item: ItemEnum) -> TokenStream {
         .variants
         .first()
         .map_or(false, |v| v.discriminant.is_some());
+    let add_inverted_flags = args.config.is_some_and(|config| config.inverted_flags);
 
     let flag_consts = item.variants.iter().enumerate().map(|(i, v)| {
         if has_vals != v.discriminant.is_some() {
@@ -34,7 +36,7 @@ pub fn parse(attr: TokenStream, item: ItemEnum) -> TokenStream {
             #(#variant_attrs)*
             #vis const #variant_ident: #ident = #expr;
         );
-        if args.inverted_flags {
+        if add_inverted_flags {
             let inverted_variant_ident = Ident::new(&format!("Inverted{}", v.ident), ident.span());
             let inverted_expr = if has_vals {
                 let (_, ref expr) = v.discriminant.as_ref().expect("unreachable");
@@ -238,7 +240,7 @@ pub fn parse(attr: TokenStream, item: ItemEnum) -> TokenStream {
 
 struct BitmaskArgs {
     pub typ: Ident,
-    pub inverted_flags: bool,
+    pub config: Option<BitMaskArgsConfig>,
 }
 
 impl BitmaskArgs {
@@ -251,8 +253,8 @@ impl BitmaskArgs {
         self
     }
 
-    pub fn inverted_flags(mut self, inverted_flags: bool) -> Self {
-        self.inverted_flags = inverted_flags;
+    pub fn config(mut self, config: Option<BitMaskArgsConfig>) -> Self {
+        self.config = config;
         self
     }
 }
@@ -261,12 +263,36 @@ impl Default for BitmaskArgs {
     fn default() -> Self {
         Self {
             typ: Ident::new("usize", Span::call_site().into()),
+            config: None,
+        }
+    }
+}
+
+struct BitMaskArgsConfig {
+    pub inverted_flags: bool,
+}
+
+impl BitMaskArgsConfig {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    pub fn inverted_flags(mut self, inverted_flags: bool) -> Self {
+        self.inverted_flags = inverted_flags;
+        self
+    }
+}
+
+impl Default for BitMaskArgsConfig {
+    fn default() -> Self {
+        Self {
             inverted_flags: false,
         }
     }
 }
 
 mod kw {
+    syn::custom_keyword!(config);
     syn::custom_keyword!(inverted_flags);
 }
 
@@ -279,9 +305,13 @@ impl Parse for BitmaskArgs {
             }
 
             let lookahead = input.lookahead1();
-            if lookahead.peek(kw::inverted_flags) {
-                input.parse::<kw::inverted_flags>()?;
-                bitmask_args = bitmask_args.inverted_flags(true);
+            if lookahead.peek(kw::config) {
+                input.parse::<kw::config>()?;
+                input.parse::<Token![=]>()?;
+                let content;
+                bracketed!(content in input);
+                let config = content.parse::<BitMaskArgsConfig>()?;
+                bitmask_args = bitmask_args.config(Some(config));
             } else if lookahead.peek(Ident) {
                 let ident = input.parse::<Ident>()?;
                 match ident.to_string().as_str() {
@@ -301,6 +331,30 @@ impl Parse for BitmaskArgs {
             input.parse::<Token!(,)>()?;
         }
         Ok(bitmask_args)
+    }
+}
+
+impl Parse for BitMaskArgsConfig {
+    fn parse(input: ParseStream) -> syn::Result<Self> {
+        let mut bitmask_args_config = Self::new();
+        loop {
+            if input.is_empty() {
+                break;
+            }
+
+            let lookahead = input.lookahead1();
+            if lookahead.peek(kw::inverted_flags) {
+                input.parse::<kw::inverted_flags>()?;
+                bitmask_args_config = bitmask_args_config.inverted_flags(true);
+            }
+
+            if input.is_empty() {
+                break;
+            }
+
+            input.parse::<Token!(,)>()?;
+        }
+        Ok(bitmask_args_config)
     }
 }
 
