@@ -322,6 +322,8 @@ impl Parse for BitmaskArgs {
                     }
                     _ => panic!("type can only be an (un)signed integer."),
                 }
+            } else {
+                return Err(lookahead.error());
             }
 
             if input.is_empty() {
@@ -346,6 +348,8 @@ impl Parse for BitMaskArgsConfig {
             if lookahead.peek(kw::inverted_flags) {
                 input.parse::<kw::inverted_flags>()?;
                 bitmask_args_config = bitmask_args_config.inverted_flags(true);
+            } else {
+                return Err(lookahead.error());
             }
 
             if input.is_empty() {
