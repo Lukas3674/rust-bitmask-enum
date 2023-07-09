@@ -62,69 +62,72 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
         impl #ident {
             #(#flags)*
 
-            /// returns the underlying bits
+            /// Returns the underlying bits of the bitmask.
             #[inline]
             #vis const fn bits(&self) -> #typ {
                 self.bits
             }
 
-            /// contains all values
+            /// Returns a bitmask that contains all values.
             #[inline]
             #vis const fn all() -> Self {
                 Self { bits: !0 }
             }
 
-            /// if self contains all values
+            /// Returns `true` if the bitmask contains all values.
             #[inline]
             #vis const fn is_all(&self) -> bool {
                 self.bits == !0
             }
 
-            /// contains no value
+            /// Returns a bitmask that does not contain any values.
             #[inline]
             #vis const fn none() -> Self {
                 Self { bits: 0 }
             }
 
-            /// if self contains no value
+            /// Returns `true` if the bitmask does not contain any values.
             #[inline]
             #vis const fn is_none(&self) -> bool {
                 self.bits == 0
             }
 
-            /// self intersects one of the other
-            /// `(self & other) != 0 || other == 0`
+            /// Returns `true` if `self` intersects with any value in `other`,
+            /// or if `other` does not contain any values.
+            ///
+            /// This is equivalent to `(self & other) != 0 || other == 0`.
             #[inline]
             #vis const fn intersects(&self, other: Self) -> bool {
                 (self.bits & other.bits) != 0 || other.bits == 0
             }
 
-            /// self contains all of the other
-            /// `(self & other) == other`
+            /// Returns `true` if `self` contains all values of `other`.
+            ///
+            /// This is equivalent to  `(self & other) == other`.
             #[inline]
             #vis const fn contains(&self, other: Self) -> bool {
                 (self.bits & other.bits) == other.bits
             }
 
-            /// constant bitwise not
+            /// Returns the bitwise NOT of the bitmask.
             #[inline]
             #vis const fn not(self) -> Self {
                 Self { bits: !self.bits }
             }
 
-            /// constant bitwise and
+            /// Returns the bitwise AND of the bitmask.
             #[inline]
             #vis const fn and(self, other: Self) -> Self {
                 Self { bits: self.bits & other.bits }
             }
 
-            /// constant bitwise or
+            /// Returns the bitwise OR of the bitmask.
             #[inline]
             #vis const fn or(self, other: Self) -> Self {
                 Self { bits: self.bits | other.bits }
             }
 
-            /// constant bitwise xor
+            /// Returns the bitwise XOR of the bitmask.
             #[inline]
             #vis const fn xor(self, other: Self) -> Self {
                 Self { bits: self.bits ^ other.bits }

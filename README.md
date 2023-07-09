@@ -121,30 +121,31 @@ If you need / can think of any other config option, feel free to suggest them an
 
 ## Implemented Methods
 ```rust,ignore
-// returns the underlying bits
+// Returns the underlying bits of the bitmask.
 const fn bits(&self) -> #type {
 
-// contains all values
+// Returns a bitmask that contains all values.
 const fn all() -> Self;
 
-// if self contains all values
+// Returns `true` if the bitmask contains all values.
 const fn is_all(&self) -> bool;
 
-// contains no value
+// Returns a bitmask that does not contain any values.
 const fn none() -> Self;
 
-// if self contains no value
+// Returns `true` if the bitmask does not contain any values.
 const fn is_none(&self) -> bool;
 
-// self intersects one of the other
-// (self & other) != 0 || other == 0
+// Returns `true` if `self` intersects with any value in `other`,
+// or if `other` does not contain any values.
+// This is equivalent to `(self & other) != 0 || other == 0`.
 const fn intersects(&self, other: Self) -> bool;
 
-// self contains all of the other
-// (self & other) == other
+// Returns `true` if `self` contains all values of `other`.
+// This is equivalent to  `(self & other) == other`.
 const fn contains(&self, other: Self) -> bool;
 
-// constant bitwise ops
+// Constant bitwise operations.
 const fn not(self) -> Self;
 const fn and(self, other: Self) -> Self;
 const fn or(self, other: Self) -> Self;
