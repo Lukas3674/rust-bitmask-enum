@@ -122,7 +122,7 @@ If you need / can think of any other config option, feel free to suggest them an
 ## Implemented Methods
 ```rust,ignore
 // Returns the underlying bits of the bitmask.
-const fn bits(&self) -> #type {
+const fn bits(&self) -> #type;
 
 // Returns a bitmask that contains all values.
 const fn all() -> Self;

@@ -14,7 +14,7 @@ impl Bitmask {
     }
 }
 
-// bitmask has const bitwise operator methods
+// The bitmask has const bitwise operator methods
 const CONST_BM: Bitmask = Bitmask::Flag2.or(Bitmask::Flag3);
 
 fn main() {
