@@ -53,6 +53,21 @@ mod tests {
     }
 
     #[test]
+    fn test_full() {
+        let full = Bitmask::full();
+        assert_eq!(full.is_full(), true);
+        assert_eq!(full, Bitmask::Flag1 | Bitmask::Flag2 | Bitmask::Flag3 | Bitmask::Flag4 | Bitmask::Flag5 | Bitmask::Flag6 | Bitmask::Flag7 | Bitmask::Flag8);
+    }
+
+    #[test]
+    fn test_truncate() {
+        let all = Bitmask::all();
+        assert_eq!(all.is_all(), true);
+        assert_eq!(all.is_full(), false);
+        assert_eq!(all.truncate().is_full(), true);
+    }
+
+    #[test]
     fn test_intersects() {
         let bm = Bitmask::Flag4;
         assert_eq!(bm.intersects(Bitmask::Flag4), true);
