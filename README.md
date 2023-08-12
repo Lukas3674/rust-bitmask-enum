@@ -125,9 +125,15 @@ If you need / can think of any other config option, feel free to suggest them an
 const fn bits(&self) -> #type;
 
 // Returns a bitmask that contains all values.
+//
+// This will include bits that do not have any flags.
+// Use `::full()` if you only want to use flags.
 const fn all() -> Self;
 
 // Returns `true` if the bitmask contains all values.
+//
+// This will check for `bits == !0`,
+// use `.is_full()` if you only want to check for all flags
 const fn is_all(&self) -> bool;
 
 // Returns a bitmask that does not contain any values.
@@ -135,6 +141,18 @@ const fn none() -> Self;
 
 // Returns `true` if the bitmask does not contain any values.
 const fn is_none(&self) -> bool;
+
+// Returns a bitmask that contains all flags.
+const fn full() -> Self;
+
+// Returns `true` if the bitmask contains all flags.
+//
+// This will fail if any unused bit is set,
+// consider using `.truncate()` first.
+const fn is_full(&self) -> bool;
+
+// Returns a bitmask that only has bits corresponding to flags
+const fn truncate(&self) -> Self;
 
 // Returns `true` if `self` intersects with any value in `other`,
 // or if `other` does not contain any values.
