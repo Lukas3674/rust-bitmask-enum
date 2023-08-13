@@ -1,9 +1,8 @@
 use proc_macro::{Span, TokenStream};
 use syn::{
-    Error, Result,
-    Ident, ItemEnum, Token,
     parse::{Parse, ParseStream},
     punctuated::Punctuated,
+    Error, Ident, ItemEnum, LitInt, Result, Token,
 };
 
 pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
@@ -21,20 +20,10 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
     let attrs = item.attrs;
     let ident = item.ident;
 
-    let mut flags_amount = item.variants.len();
-
-    if config.inverted_flags {
-        flags_amount *= 2;
-    }
-
-    let mut all_flags = Vec::with_capacity(flags_amount);
-
     let mut i: usize = 0;
     let flags = item.variants.iter().map(|v| {
         let v_attrs = &v.attrs;
         let v_ident = &v.ident;
-
-        all_flags.push(quote::quote!(Self::#v_ident));
 
         let expr = if let Some((_, expr)) = v.discriminant.as_ref() {
             quote::quote!(#expr)
@@ -44,16 +33,17 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
             expr
         };
 
-        let i_flag = config.inverted_flags.then(|| {
-            let i_ident = Ident::new(&format!("Inverted{}", v_ident), v_ident.span());
+        let i_flag = config
+            .inverted_flags
+            .then(|| {
+                let i_ident = Ident::new(&format!("Inverted{}", v_ident), v_ident.span());
 
-            all_flags.push(quote::quote!(Self::#i_ident));
-
-            quote::quote!(
-                #(#v_attrs)*
-                #vis const #i_ident: #ident = Self { bits: (#expr) ^ !0 };
-            )
-        }).into_iter();
+                quote::quote!(
+                    #(#v_attrs)*
+                    #vis const #i_ident: #ident = Self { bits: (#expr) ^ !0 };
+                )
+            })
+            .into_iter();
 
         quote::quote!(
             #(#v_attrs)*
@@ -63,6 +53,10 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
         )
     });
 
+    let full_value = LitInt::new(
+        &format!("0b{:b}", (1 << item.variants.len()) - 1),
+        Span::call_site().into(),
+    );
     Ok(TokenStream::from(quote::quote! {
         #(#attrs)*
         #[repr(transparent)]
@@ -114,7 +108,7 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
             /// Returns a bitmask that contains all flags.
             #[inline]
             #vis const fn full() -> Self {
-                Self { bits: #(#all_flags.bits |)* 0 }
+                Self { bits: #full_value }
             }
 
             /// Returns `true` if the bitmask contains all flags.
@@ -123,13 +117,13 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
             /// consider using `.truncate()` first.
             #[inline]
             #vis const fn is_full(&self) -> bool {
-                self.bits == Self::full().bits
+                self.bits == #full_value
             }
 
             /// Returns a bitmask that only has bits corresponding to flags
             #[inline]
             #vis const fn truncate(&self) -> Self {
-                Self { bits: self.bits & Self::full().bits }
+                Self { bits: self.bits & #full_value }
             }
 
             /// Returns `true` if `self` intersects with any value in `other`,

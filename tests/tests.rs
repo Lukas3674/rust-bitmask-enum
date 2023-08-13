@@ -14,6 +14,13 @@ mod tests {
         Flag8,
     }
 
+    #[bitmask]
+    enum PartialBitmask {
+        Flag1,
+        Flag2,
+        Flag3,
+    }
+
     #[test]
     fn test() {
         let mut bm = Bitmask::none();
@@ -57,6 +64,12 @@ mod tests {
         let full = Bitmask::full();
         assert_eq!(full.is_full(), true);
         assert_eq!(full, Bitmask::Flag1 | Bitmask::Flag2 | Bitmask::Flag3 | Bitmask::Flag4 | Bitmask::Flag5 | Bitmask::Flag6 | Bitmask::Flag7 | Bitmask::Flag8);
+
+
+        let full = PartialBitmask::full();
+        assert_eq!(full.is_full(), true);
+        assert_eq!(full.is_all(), false);
+        assert_eq!(full.bits, 0b111);
     }
 
     #[test]
