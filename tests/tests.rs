@@ -150,48 +150,48 @@ mod tests {
             Flag1,
             Flag2,
         }
-        assert_eq!(BitmaskUsize::Flag1, 0b01);
-        assert_eq!(BitmaskUsize::Flag2, 0b10);
+        assert_eq!(BitmaskIsize::Flag1, 0b01);
+        assert_eq!(BitmaskIsize::Flag2, 0b10);
 
         #[bitmask(i8)]
         enum BitmaskI8 {
             Flag1,
             Flag2,
         }
-        assert_eq!(BitmaskU8::Flag1, 0b01);
-        assert_eq!(BitmaskU8::Flag2, 0b10);
+        assert_eq!(BitmaskI8::Flag1, 0b01);
+        assert_eq!(BitmaskI8::Flag2, 0b10);
 
         #[bitmask(i16)]
         enum BitmaskI16 {
             Flag1,
             Flag2,
         }
-        assert_eq!(BitmaskU16::Flag1, 0b01);
-        assert_eq!(BitmaskU16::Flag2, 0b10);
+        assert_eq!(BitmaskI16::Flag1, 0b01);
+        assert_eq!(BitmaskI16::Flag2, 0b10);
 
         #[bitmask(i32)]
         enum BitmaskI32 {
             Flag1,
             Flag2,
         }
-        assert_eq!(BitmaskU32::Flag1, 0b01);
-        assert_eq!(BitmaskU32::Flag2, 0b10);
+        assert_eq!(BitmaskI32::Flag1, 0b01);
+        assert_eq!(BitmaskI32::Flag2, 0b10);
 
         #[bitmask(i64)]
         enum BitmaskI64 {
             Flag1,
             Flag2,
         }
-        assert_eq!(BitmaskU64::Flag1, 0b01);
-        assert_eq!(BitmaskU64::Flag2, 0b10);
+        assert_eq!(BitmaskI64::Flag1, 0b01);
+        assert_eq!(BitmaskI64::Flag2, 0b10);
 
         #[bitmask(i128)]
         enum BitmaskI128 {
             Flag1,
             Flag2,
         }
-        assert_eq!(BitmaskU128::Flag1, 0b01);
-        assert_eq!(BitmaskU128::Flag2, 0b10);
+        assert_eq!(BitmaskI128::Flag1, 0b01);
+        assert_eq!(BitmaskI128::Flag2, 0b10);
     }
 
     #[test]
@@ -221,12 +221,12 @@ mod tests {
             Flag123 = Self::Flag12.or(Self::Flag3).bits,
             Flag4,
         }
-        assert_eq!(BitmaskCustom::Flag1, 0b1);
-        assert_eq!(BitmaskCustom::Flag2, 0b10);
-        assert_eq!(BitmaskCustom::Flag12, 0b11);
-        assert_eq!(BitmaskCustom::Flag3, 0b100);
-        assert_eq!(BitmaskCustom::Flag123, 0b111);
-        assert_eq!(BitmaskCustom::Flag4, 0b1000);
+        assert_eq!(BitmaskCustomTyped::Flag1, 0b1);
+        assert_eq!(BitmaskCustomTyped::Flag2, 0b10);
+        assert_eq!(BitmaskCustomTyped::Flag12, 0b11);
+        assert_eq!(BitmaskCustomTyped::Flag3, 0b100);
+        assert_eq!(BitmaskCustomTyped::Flag123, 0b111);
+        assert_eq!(BitmaskCustomTyped::Flag4, 0b1000);
     }
 
     #[test]
@@ -313,6 +313,7 @@ mod tests {
         assert_eq!(BitmaskCustom::InvertedFlag4, !0b1000);
 
         #[bitmask(u8)]
+        #[bitmask_config(inverted_flags)]
         enum BitmaskCustomTyped {
             Flag1,
             Flag2,
@@ -321,17 +322,17 @@ mod tests {
             Flag123 = Self::Flag12.or(Self::Flag3).bits,
             Flag4,
         }
-        assert_eq!(BitmaskCustom::Flag1, 0b1);
-        assert_eq!(BitmaskCustom::Flag2, 0b10);
-        assert_eq!(BitmaskCustom::Flag12, 0b11);
-        assert_eq!(BitmaskCustom::Flag3, 0b100);
-        assert_eq!(BitmaskCustom::Flag123, 0b111);
-        assert_eq!(BitmaskCustom::Flag4, 0b1000);
-        assert_eq!(BitmaskCustom::InvertedFlag1, !0b1);
-        assert_eq!(BitmaskCustom::InvertedFlag2, !0b10);
-        assert_eq!(BitmaskCustom::InvertedFlag12, !0b11);
-        assert_eq!(BitmaskCustom::InvertedFlag3, !0b100);
-        assert_eq!(BitmaskCustom::InvertedFlag123, !0b111);
-        assert_eq!(BitmaskCustom::InvertedFlag4, !0b1000);
+        assert_eq!(BitmaskCustomTyped::Flag1, 0b1);
+        assert_eq!(BitmaskCustomTyped::Flag2, 0b10);
+        assert_eq!(BitmaskCustomTyped::Flag12, 0b11);
+        assert_eq!(BitmaskCustomTyped::Flag3, 0b100);
+        assert_eq!(BitmaskCustomTyped::Flag123, 0b111);
+        assert_eq!(BitmaskCustomTyped::Flag4, 0b1000);
+        assert_eq!(BitmaskCustomTyped::InvertedFlag1, !0b1);
+        assert_eq!(BitmaskCustomTyped::InvertedFlag2, !0b10);
+        assert_eq!(BitmaskCustomTyped::InvertedFlag12, !0b11);
+        assert_eq!(BitmaskCustomTyped::InvertedFlag3, !0b100);
+        assert_eq!(BitmaskCustomTyped::InvertedFlag123, !0b111);
+        assert_eq!(BitmaskCustomTyped::InvertedFlag4, !0b1000);
     }
 }
