@@ -362,4 +362,21 @@ mod tests {
         assert_eq!(format!("{:?}", Bitmask::Flag1.or(Bitmask::Flag2)), "Bitmask { bits: 3 }");
         assert_eq!(format!("{:?}", Bitmask::Flag3), "Bitmask { bits: 4 }");
     }
+
+    #[test]
+    fn test_vec_debug_inverted() {
+        #[bitmask(u8)]
+        #[bitmask_config(vec_debug, inverted_flags)]
+        pub enum BitmaskVecDebug {
+            Flag1,
+            Flag2
+        }
+
+        assert_eq!(format!("{:?}", BitmaskVecDebug::none()), "BitmaskVecDebug[]");
+        assert_eq!(format!("{:?}", BitmaskVecDebug::Flag1), "BitmaskVecDebug[Flag1]");
+        assert_eq!(format!("{:?}", BitmaskVecDebug::Flag2), "BitmaskVecDebug[Flag2]");
+        assert_eq!(format!("{:?}", BitmaskVecDebug::InvertedFlag1), "BitmaskVecDebug[InvertedFlag1, Flag2]");
+        assert_eq!(format!("{:?}", BitmaskVecDebug::InvertedFlag2), "BitmaskVecDebug[Flag1, InvertedFlag2]");
+        assert_eq!(format!("{:?}", BitmaskVecDebug::full()), "BitmaskVecDebug[Flag1, InvertedFlag1, Flag2, InvertedFlag2]");
+    }
 }
