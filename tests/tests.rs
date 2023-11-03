@@ -353,5 +353,11 @@ mod tests {
         assert_eq!(format!("{:?}", BitmaskDebugAsVec::Flag12), "[Flag1, Flag2, Flag12]");
         assert_eq!(format!("{:?}", BitmaskDebugAsVec::Flag3), "[Flag3]");
         assert_eq!(format!("{:?}", BitmaskDebugAsVec::full()), "[Flag1, Flag2, Flag12, Flag3]");
+
+        assert_eq!(format!("{:?}", Bitmask::none()), "Bitmask { bits: 0 }");
+        assert_eq!(format!("{:?}", Bitmask::Flag1), "Bitmask { bits: 1 }");
+        assert_eq!(format!("{:?}", Bitmask::Flag2), "Bitmask { bits: 2 }");
+        assert_eq!(format!("{:?}", Bitmask::Flag1.or(Bitmask::Flag2)), "Bitmask { bits: 3 }");
+        assert_eq!(format!("{:?}", Bitmask::Flag3), "Bitmask { bits: 4 }");
     }
 }
