@@ -107,15 +107,27 @@ enum Bitmask {
     Flag1, // defaults to 0b00000001
 }
 
+#[bitmask(u8)]
+#[bitmask_config(vec_debug)]
+enum BitmaskVecDebug {
+    Flag1,
+    Flag2,
+}
+
 fn main() {
     println!("{:#010b}", Bitmask::Flag1); // 0b00000001
     println!("{:#010b}", Bitmask::InvertedFlag1); // 0b11111110
+
+    println!("{:?}", BitmaskVecDebug::none()); // []
+    println!("{:?}", BitmaskVecDebug::Flag1); // [Flag1]
+    println!("{:?}", BitmaskVecDebug::full()); // [Flag1, Flag2]
 }
 ```
 
 ### Available Config Options
 
 - `inverted_flags` => Adds an inverted flag for every non-inverted flag to the bitmask.
+- `vec_debug` => Adds a custom Debug trait implementation that prints the bitmask as a vec of all matching values.
 
 If you need / can think of any other config option, feel free to suggest them and we can discuss implementing them.
 
