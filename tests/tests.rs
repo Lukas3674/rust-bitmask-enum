@@ -347,13 +347,13 @@ mod tests {
             Flag3,
         }
 
-        assert_eq!(format!("{:?}", BitmaskVecDebug::none()), "[]");
-        assert_eq!(format!("{:?}", BitmaskVecDebug::Flag1), "[Flag1]");
-        assert_eq!(format!("{:?}", BitmaskVecDebug::Flag2), "[Flag2]");
-        assert_eq!(format!("{:?}", BitmaskVecDebug::Flag12), "[Flag1, Flag2, Flag12]");
-        assert_eq!(format!("{:?}", BitmaskVecDebug::Flag3), "[Flag3]");
-        assert_eq!(format!("{:?}", BitmaskVecDebug::Flag2.or(BitmaskVecDebug::Flag3)), "[Flag2, Flag3]");
-        assert_eq!(format!("{:?}", BitmaskVecDebug::full()), "[Flag1, Flag2, Flag12, Flag3]");
+        assert_eq!(format!("{:?}", BitmaskVecDebug::none()), "BitmaskVecDebug[]");
+        assert_eq!(format!("{:?}", BitmaskVecDebug::Flag1), "BitmaskVecDebug[Flag1]");
+        assert_eq!(format!("{:?}", BitmaskVecDebug::Flag2), "BitmaskVecDebug[Flag2]");
+        assert_eq!(format!("{:?}", BitmaskVecDebug::Flag12), "BitmaskVecDebug[Flag1, Flag2, Flag12]");
+        assert_eq!(format!("{:?}", BitmaskVecDebug::Flag3), "BitmaskVecDebug[Flag3]");
+        assert_eq!(format!("{:?}", BitmaskVecDebug::Flag2.or(BitmaskVecDebug::Flag3)), "BitmaskVecDebug[Flag2, Flag3]");
+        assert_eq!(format!("{:?}", BitmaskVecDebug::full()), "BitmaskVecDebug[Flag1, Flag2, Flag12, Flag3]");
 
         // default formatting
         assert_eq!(format!("{:?}", Bitmask::none()), "Bitmask { bits: 0 }");

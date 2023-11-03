@@ -77,7 +77,7 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
                         matches.push(#all_flags_names);
                     })*
 
-                    write!(f, "[{}]", matches.join(", "))
+                    write!(f, "{}[{}]", stringify!(#ident), matches.join(", "))
                 }
             }
         }

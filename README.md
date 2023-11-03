@@ -118,9 +118,9 @@ fn main() {
     println!("{:#010b}", Bitmask::Flag1); // 0b00000001
     println!("{:#010b}", Bitmask::InvertedFlag1); // 0b11111110
 
-    println!("{:?}", BitmaskVecDebug::none()); // []
-    println!("{:?}", BitmaskVecDebug::Flag1); // [Flag1]
-    println!("{:?}", BitmaskVecDebug::full()); // [Flag1, Flag2]
+    println!("{:?}", BitmaskVecDebug::none()); // BitmaskVecDebug[]
+    println!("{:?}", BitmaskVecDebug::Flag1); // BitmaskVecDebug[Flag1]
+    println!("{:?}", BitmaskVecDebug::full()); // BitmaskVecDebug[Flag1, Flag2]
 }
 ```
 
