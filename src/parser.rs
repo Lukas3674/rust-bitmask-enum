@@ -51,7 +51,7 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
             let i_ident = Ident::new(&format!("Inverted{}", v_ident), v_ident.span());
 
             all_flags.push(quote::quote!(Self::#i_ident));
-            all_flags_names.push(quote::quote!(stringify!(#v_ident)));
+            all_flags_names.push(quote::quote!(stringify!(#i_ident)));
 
             quote::quote!(
                 #(#v_attrs)*
