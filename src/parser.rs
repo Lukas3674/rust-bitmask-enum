@@ -28,13 +28,16 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
     }
 
     let mut all_flags = Vec::with_capacity(flags_amount);
+    let mut all_flags_names = Vec::with_capacity(flags_amount);
 
     let mut i: usize = 0;
-    let flags = item.variants.iter().map(|v| {
+    let mut flags = Vec::with_capacity(flags_amount);
+    for v in item.variants.iter() {
         let v_attrs = &v.attrs;
         let v_ident = &v.ident;
 
         all_flags.push(quote::quote!(Self::#v_ident));
+        all_flags_names.push(quote::quote!(stringify!(#v_ident)));
 
         let expr = if let Some((_, expr)) = v.discriminant.as_ref() {
             quote::quote!(#expr)
@@ -48,6 +51,7 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
             let i_ident = Ident::new(&format!("Inverted{}", v_ident), v_ident.span());
 
             all_flags.push(quote::quote!(Self::#i_ident));
+            all_flags_names.push(quote::quote!(stringify!(#v_ident)));
 
             quote::quote!(
                 #(#v_attrs)*
@@ -55,18 +59,44 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
             )
         }).into_iter();
 
-        quote::quote!(
+        flags.push(quote::quote!(
             #(#v_attrs)*
             #vis const #v_ident: #ident = Self { bits: #expr };
 
             #(#i_flag)*
-        )
-    });
+        ))
+    }
+
+    let debug_impl = if config.vec_debug {
+        quote::quote! {
+            impl core::fmt::Debug for #ident {
+                fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+                    let mut matches = Vec::new();
+
+                    #(if self.contains(#all_flags) {
+                        matches.push(#all_flags_names);
+                    })*
+
+                    write!(f, "{}[{}]", stringify!(#ident), matches.join(", "))
+                }
+            }
+        }
+    } else { 
+        quote::quote! {
+            impl core::fmt::Debug for #ident {
+                fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+                    f.debug_struct(stringify!(#ident))
+                        .field("bits", &self.bits)
+                        .finish()
+                }
+            }
+        }
+    };
 
     Ok(TokenStream::from(quote::quote! {
         #(#attrs)*
         #[repr(transparent)]
-        #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+        #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
         #vis struct #ident {
             bits: #typ,
         }
@@ -248,6 +278,8 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
             }
         }
 
+        #debug_impl
+
         impl core::fmt::Binary for #ident {
             #[inline]
             fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
@@ -294,12 +326,14 @@ fn parse_typ(attr: TokenStream) -> Result<Ident> {
 
 struct Config {
     inverted_flags: bool,
+    vec_debug: bool
 }
 
 impl Config {
     fn new() -> Self {
         Self {
             inverted_flags: false,
+            vec_debug: false
         }
     }
 }
@@ -311,6 +345,7 @@ impl Parse for Config {
         for arg in args {
             match arg.to_string().as_str() {
                 "inverted_flags" => config.inverted_flags = true,
+                "vec_debug" => config.vec_debug = true,
                 _ => return Err(Error::new_spanned(arg, "unknown config option")),
             }
         }
