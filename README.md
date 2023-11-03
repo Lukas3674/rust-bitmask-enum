@@ -127,7 +127,7 @@ fn main() {
 ### Available Config Options
 
 - `inverted_flags` => Adds an inverted flag for every non-inverted flag to the bitmask.
-- `vec_debug` => Adds a custom Debug trait implementation that prints the bitmask as a vec of all matching values.
+- `vec_debug` => Replaces the default Debug trait implementation with a custom one that prints the bitmask as a vec of all matching values.
 
 If you need / can think of any other config option, feel free to suggest them and we can discuss implementing them.
 
