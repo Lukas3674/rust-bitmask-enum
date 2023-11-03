@@ -67,7 +67,7 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
         ))
     }
 
-    let debug_impl = if config.debug_as_vec {
+    let debug_impl = if config.vec_debug {
         quote::quote! {
             impl core::fmt::Debug for #ident {
                 fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
@@ -326,14 +326,14 @@ fn parse_typ(attr: TokenStream) -> Result<Ident> {
 
 struct Config {
     inverted_flags: bool,
-    debug_as_vec: bool
+    vec_debug: bool
 }
 
 impl Config {
     fn new() -> Self {
         Self {
             inverted_flags: false,
-            debug_as_vec: false
+            vec_debug: false
         }
     }
 }
@@ -345,7 +345,7 @@ impl Parse for Config {
         for arg in args {
             match arg.to_string().as_str() {
                 "inverted_flags" => config.inverted_flags = true,
-                "debug_as_vec" => config.debug_as_vec = true,
+                "vec_debug" => config.vec_debug = true,
                 _ => return Err(Error::new_spanned(arg, "unknown config option")),
             }
         }
