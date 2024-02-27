@@ -56,7 +56,17 @@ mod tests {
     fn test_full() {
         let full = Bitmask::full();
         assert_eq!(full.is_full(), true);
-        assert_eq!(full, Bitmask::Flag1 | Bitmask::Flag2 | Bitmask::Flag3 | Bitmask::Flag4 | Bitmask::Flag5 | Bitmask::Flag6 | Bitmask::Flag7 | Bitmask::Flag8);
+        assert_eq!(
+            full,
+            Bitmask::Flag1
+                | Bitmask::Flag2
+                | Bitmask::Flag3
+                | Bitmask::Flag4
+                | Bitmask::Flag5
+                | Bitmask::Flag6
+                | Bitmask::Flag7
+                | Bitmask::Flag8
+        );
     }
 
     #[test]
@@ -347,19 +357,43 @@ mod tests {
             Flag3,
         }
 
-        assert_eq!(format!("{:?}", BitmaskVecDebug::none()), "BitmaskVecDebug[]");
-        assert_eq!(format!("{:?}", BitmaskVecDebug::Flag1), "BitmaskVecDebug[Flag1]");
-        assert_eq!(format!("{:?}", BitmaskVecDebug::Flag2), "BitmaskVecDebug[Flag2]");
-        assert_eq!(format!("{:?}", BitmaskVecDebug::Flag12), "BitmaskVecDebug[Flag1, Flag2, Flag12]");
-        assert_eq!(format!("{:?}", BitmaskVecDebug::Flag3), "BitmaskVecDebug[Flag3]");
-        assert_eq!(format!("{:?}", BitmaskVecDebug::Flag2.or(BitmaskVecDebug::Flag3)), "BitmaskVecDebug[Flag2, Flag3]");
-        assert_eq!(format!("{:?}", BitmaskVecDebug::full()), "BitmaskVecDebug[Flag1, Flag2, Flag12, Flag3]");
+        assert_eq!(
+            format!("{:?}", BitmaskVecDebug::none()),
+            "BitmaskVecDebug[]"
+        );
+        assert_eq!(
+            format!("{:?}", BitmaskVecDebug::Flag1),
+            "BitmaskVecDebug[Flag1]"
+        );
+        assert_eq!(
+            format!("{:?}", BitmaskVecDebug::Flag2),
+            "BitmaskVecDebug[Flag2]"
+        );
+        assert_eq!(
+            format!("{:?}", BitmaskVecDebug::Flag12),
+            "BitmaskVecDebug[Flag1, Flag2, Flag12]"
+        );
+        assert_eq!(
+            format!("{:?}", BitmaskVecDebug::Flag3),
+            "BitmaskVecDebug[Flag3]"
+        );
+        assert_eq!(
+            format!("{:?}", BitmaskVecDebug::Flag2.or(BitmaskVecDebug::Flag3)),
+            "BitmaskVecDebug[Flag2, Flag3]"
+        );
+        assert_eq!(
+            format!("{:?}", BitmaskVecDebug::full()),
+            "BitmaskVecDebug[Flag1, Flag2, Flag12, Flag3]"
+        );
 
         // default formatting
         assert_eq!(format!("{:?}", Bitmask::none()), "Bitmask { bits: 0 }");
         assert_eq!(format!("{:?}", Bitmask::Flag1), "Bitmask { bits: 1 }");
         assert_eq!(format!("{:?}", Bitmask::Flag2), "Bitmask { bits: 2 }");
-        assert_eq!(format!("{:?}", Bitmask::Flag1.or(Bitmask::Flag2)), "Bitmask { bits: 3 }");
+        assert_eq!(
+            format!("{:?}", Bitmask::Flag1.or(Bitmask::Flag2)),
+            "Bitmask { bits: 3 }"
+        );
         assert_eq!(format!("{:?}", Bitmask::Flag3), "Bitmask { bits: 4 }");
     }
 
@@ -369,14 +403,32 @@ mod tests {
         #[bitmask_config(vec_debug, inverted_flags)]
         pub enum BitmaskVecDebug {
             Flag1,
-            Flag2
+            Flag2,
         }
 
-        assert_eq!(format!("{:?}", BitmaskVecDebug::none()), "BitmaskVecDebug[]");
-        assert_eq!(format!("{:?}", BitmaskVecDebug::Flag1), "BitmaskVecDebug[Flag1]");
-        assert_eq!(format!("{:?}", BitmaskVecDebug::Flag2), "BitmaskVecDebug[Flag2]");
-        assert_eq!(format!("{:?}", BitmaskVecDebug::InvertedFlag1), "BitmaskVecDebug[InvertedFlag1, Flag2]");
-        assert_eq!(format!("{:?}", BitmaskVecDebug::InvertedFlag2), "BitmaskVecDebug[Flag1, InvertedFlag2]");
-        assert_eq!(format!("{:?}", BitmaskVecDebug::full()), "BitmaskVecDebug[Flag1, InvertedFlag1, Flag2, InvertedFlag2]");
+        assert_eq!(
+            format!("{:?}", BitmaskVecDebug::none()),
+            "BitmaskVecDebug[]"
+        );
+        assert_eq!(
+            format!("{:?}", BitmaskVecDebug::Flag1),
+            "BitmaskVecDebug[Flag1]"
+        );
+        assert_eq!(
+            format!("{:?}", BitmaskVecDebug::Flag2),
+            "BitmaskVecDebug[Flag2]"
+        );
+        assert_eq!(
+            format!("{:?}", BitmaskVecDebug::InvertedFlag1),
+            "BitmaskVecDebug[InvertedFlag1, Flag2]"
+        );
+        assert_eq!(
+            format!("{:?}", BitmaskVecDebug::InvertedFlag2),
+            "BitmaskVecDebug[Flag1, InvertedFlag2]"
+        );
+        assert_eq!(
+            format!("{:?}", BitmaskVecDebug::full()),
+            "BitmaskVecDebug[Flag1, InvertedFlag1, Flag2, InvertedFlag2]"
+        );
     }
 }
