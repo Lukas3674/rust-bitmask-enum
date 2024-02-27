@@ -1,17 +1,19 @@
 use proc_macro::{Span, TokenStream};
 use syn::{
-    Error, Result,
-    Ident, ItemEnum, Token,
     parse::{Parse, ParseStream},
     punctuated::Punctuated,
+    Error, Ident, ItemEnum, Result, Token,
 };
 
 pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
     let typ = parse_typ(attr)?;
 
-    let config = if let Some(idx) = item.attrs.iter().enumerate().find_map(
-        |(idx, attr)| attr.path().is_ident("bitmask_config").then_some(idx)
-    ) {
+    let config = if let Some(idx) = item
+        .attrs
+        .iter()
+        .enumerate()
+        .find_map(|(idx, attr)| attr.path().is_ident("bitmask_config").then_some(idx))
+    {
         item.attrs.remove(idx).parse_args::<Config>()?
     } else {
         Config::new()
@@ -47,17 +49,20 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
             expr
         };
 
-        let i_flag = config.inverted_flags.then(|| {
-            let i_ident = Ident::new(&format!("Inverted{}", v_ident), v_ident.span());
+        let i_flag = config
+            .inverted_flags
+            .then(|| {
+                let i_ident = Ident::new(&format!("Inverted{}", v_ident), v_ident.span());
 
-            all_flags.push(quote::quote!(Self::#i_ident));
-            all_flags_names.push(quote::quote!(stringify!(#i_ident)));
+                all_flags.push(quote::quote!(Self::#i_ident));
+                all_flags_names.push(quote::quote!(stringify!(#i_ident)));
 
-            quote::quote!(
-                #(#v_attrs)*
-                #vis const #i_ident: #ident = Self { bits: (#expr) ^ !0 };
-            )
-        }).into_iter();
+                quote::quote!(
+                    #(#v_attrs)*
+                    #vis const #i_ident: #ident = Self { bits: (#expr) ^ !0 };
+                )
+            })
+            .into_iter();
 
         flags.push(quote::quote!(
             #(#v_attrs)*
@@ -81,7 +86,7 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
                 }
             }
         }
-    } else { 
+    } else {
         quote::quote! {
             impl core::fmt::Debug for #ident {
                 fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
@@ -208,7 +213,7 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
             type Output = Self;
             #[inline]
             fn not(self) -> Self::Output {
-                Self { bits: self.bits.not() }
+                Self { bits: core::ops::Not::not(self.bits) }
             }
         }
 
@@ -216,14 +221,14 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
             type Output = Self;
             #[inline]
             fn bitand(self, rhs: Self) -> Self::Output {
-                Self { bits: self.bits.bitand(rhs.bits) }
+                Self { bits: core::ops::BitAnd::bitand(self.bits, rhs.bits) }
             }
         }
 
         impl core::ops::BitAndAssign for #ident {
             #[inline]
-            fn bitand_assign(&mut self, rhs: Self){
-                self.bits.bitand_assign(rhs.bits)
+            fn bitand_assign(&mut self, rhs: Self) {
+                core::ops::BitAndAssign::bitand_assign(&mut self.bits, rhs.bits)
             }
         }
 
@@ -231,14 +236,14 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
             type Output = Self;
             #[inline]
             fn bitor(self, rhs: Self) -> Self::Output {
-                Self { bits: self.bits.bitor(rhs.bits) }
+                Self { bits: core::ops::BitOr::bitor(self.bits, rhs.bits) }
             }
         }
 
         impl core::ops::BitOrAssign for #ident {
             #[inline]
-            fn bitor_assign(&mut self, rhs: Self){
-                self.bits.bitor_assign(rhs.bits)
+            fn bitor_assign(&mut self, rhs: Self) {
+                core::ops::BitOrAssign::bitor_assign(&mut self.bits, rhs.bits)
             }
         }
 
@@ -246,14 +251,14 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
             type Output = Self;
             #[inline]
             fn bitxor(self, rhs: Self) -> Self::Output {
-                Self { bits: self.bits.bitxor(rhs.bits) }
+                Self { bits: core::ops::BitXor::bitxor(self.bits, rhs.bits) }
             }
         }
 
         impl core::ops::BitXorAssign for #ident {
             #[inline]
-            fn bitxor_assign(&mut self, rhs: Self){
-                self.bits.bitxor_assign(rhs.bits)
+            fn bitxor_assign(&mut self, rhs: Self) {
+                core::ops::BitXorAssign::bitxor_assign(&mut self.bits, rhs.bits)
             }
         }
 
@@ -283,28 +288,28 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
         impl core::fmt::Binary for #ident {
             #[inline]
             fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-                self.bits.fmt(f)
+                core::fmt::Binary::fmt(&self.bits, f)
             }
         }
 
         impl core::fmt::LowerHex for #ident {
             #[inline]
             fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-                self.bits.fmt(f)
+                core::fmt::LowerHex::fmt(&self.bits, f)
             }
         }
 
         impl core::fmt::UpperHex for #ident {
             #[inline]
             fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-                self.bits.fmt(f)
+                core::fmt::UpperHex::fmt(&self.bits, f)
             }
         }
 
         impl core::fmt::Octal for #ident {
             #[inline]
             fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-                self.bits.fmt(f)
+                core::fmt::Octal::fmt(&self.bits, f)
             }
         }
     }))
@@ -319,21 +324,24 @@ fn parse_typ(attr: TokenStream) -> Result<Ident> {
             #[rustfmt::skip]
             "u8" | "u16" | "u32" | "u64" | "u128" | "usize" |
             "i8" | "i16" | "i32" | "i64" | "i128" | "isize" => Ok(ident),
-            _ => Err(Error::new_spanned(ident, "type can only be an (un)signed integer")),
+            _ => Err(Error::new_spanned(
+                ident,
+                "type can only be an (un)signed integer",
+            )),
         }
     }
 }
 
 struct Config {
     inverted_flags: bool,
-    vec_debug: bool
+    vec_debug: bool,
 }
 
 impl Config {
     fn new() -> Self {
         Self {
             inverted_flags: false,
-            vec_debug: false
+            vec_debug: false,
         }
     }
 }
