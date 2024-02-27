@@ -431,4 +431,18 @@ mod tests {
             "BitmaskVecDebug[Flag1, InvertedFlag1, Flag2, InvertedFlag2]"
         );
     }
+
+    #[test]
+    fn test_import_debug() {
+        // check that having a `Debug` import doesn't lead to a conflict
+        #[allow(unused)]
+        use std::fmt::Debug;
+
+        // this should just compile
+        #[bitmask]
+        pub enum BitmaskImportDebug {
+            Flag1,
+            Flag2,
+        }
+    }
 }

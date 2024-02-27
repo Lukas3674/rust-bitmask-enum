@@ -213,7 +213,7 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
             type Output = Self;
             #[inline]
             fn not(self) -> Self::Output {
-                Self { bits: self.bits.not() }
+                Self { bits: core::ops::Not::not(self.bits) }
             }
         }
 
@@ -221,14 +221,14 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
             type Output = Self;
             #[inline]
             fn bitand(self, rhs: Self) -> Self::Output {
-                Self { bits: self.bits.bitand(rhs.bits) }
+                Self { bits: core::ops::BitAnd::bitand(self.bits, rhs.bits) }
             }
         }
 
         impl core::ops::BitAndAssign for #ident {
             #[inline]
-            fn bitand_assign(&mut self, rhs: Self){
-                self.bits.bitand_assign(rhs.bits)
+            fn bitand_assign(&mut self, rhs: Self) {
+                core::ops::BitAndAssign::bitand_assign(&mut self.bits, rhs.bits)
             }
         }
 
@@ -236,14 +236,14 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
             type Output = Self;
             #[inline]
             fn bitor(self, rhs: Self) -> Self::Output {
-                Self { bits: self.bits.bitor(rhs.bits) }
+                Self { bits: core::ops::BitOr::bitor(self.bits, rhs.bits) }
             }
         }
 
         impl core::ops::BitOrAssign for #ident {
             #[inline]
-            fn bitor_assign(&mut self, rhs: Self){
-                self.bits.bitor_assign(rhs.bits)
+            fn bitor_assign(&mut self, rhs: Self) {
+                core::ops::BitOrAssign::bitor_assign(&mut self.bits, rhs.bits)
             }
         }
 
@@ -251,14 +251,14 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
             type Output = Self;
             #[inline]
             fn bitxor(self, rhs: Self) -> Self::Output {
-                Self { bits: self.bits.bitxor(rhs.bits) }
+                Self { bits: core::ops::BitXor::bitxor(self.bits, rhs.bits) }
             }
         }
 
         impl core::ops::BitXorAssign for #ident {
             #[inline]
-            fn bitxor_assign(&mut self, rhs: Self){
-                self.bits.bitxor_assign(rhs.bits)
+            fn bitxor_assign(&mut self, rhs: Self) {
+                core::ops::BitXorAssign::bitxor_assign(&mut self.bits, rhs.bits)
             }
         }
 
@@ -288,28 +288,28 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
         impl core::fmt::Binary for #ident {
             #[inline]
             fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-                self.bits.fmt(f)
+                core::fmt::Binary::fmt(&self.bits, f)
             }
         }
 
         impl core::fmt::LowerHex for #ident {
             #[inline]
             fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-                self.bits.fmt(f)
+                core::fmt::LowerHex::fmt(&self.bits, f)
             }
         }
 
         impl core::fmt::UpperHex for #ident {
             #[inline]
             fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-                self.bits.fmt(f)
+                core::fmt::UpperHex::fmt(&self.bits, f)
             }
         }
 
         impl core::fmt::Octal for #ident {
             #[inline]
             fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
-                self.bits.fmt(f)
+                core::fmt::Octal::fmt(&self.bits, f)
             }
         }
     }))
