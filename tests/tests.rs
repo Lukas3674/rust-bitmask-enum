@@ -29,19 +29,19 @@ mod tests {
         assert_eq!(bm, 0b10000000);
 
         bm |= !Bitmask::Flag8;
-        assert_eq!(bm.is_all(), true);
+        assert_eq!(bm.is_all_bits(), true);
     }
 
     #[test]
     fn test_bits() {
-        let all = Bitmask::all();
+        let all = Bitmask::all_bits();
         assert_eq!(all.bits(), std::usize::MAX);
     }
 
     #[test]
-    fn test_all() {
-        let all = Bitmask::all();
-        assert_eq!(all.is_all(), true);
+    fn test_all_bits() {
+        let all = Bitmask::all_bits();
+        assert_eq!(all.is_all_bits(), true);
         assert_eq!(all, std::usize::MAX);
     }
 
@@ -53,11 +53,12 @@ mod tests {
     }
 
     #[test]
-    fn test_full() {
-        let full = Bitmask::full();
-        assert_eq!(full.is_full(), true);
+
+    fn test_all_variants() {
+        let all_variants = Bitmask::all_variants();
+        assert_eq!(all_variants.is_all_variants(), true);
         assert_eq!(
-            full,
+            all_variants,
             Bitmask::Flag1
                 | Bitmask::Flag2
                 | Bitmask::Flag3
@@ -71,10 +72,10 @@ mod tests {
 
     #[test]
     fn test_truncate() {
-        let all = Bitmask::all();
-        assert_eq!(all.is_all(), true);
-        assert_eq!(all.is_full(), false);
-        assert_eq!(all.truncate().is_full(), true);
+        let all = Bitmask::all_bits();
+        assert_eq!(all.is_all_bits(), true);
+        assert_eq!(all.is_all_variants(), false);
+        assert_eq!(all.truncate().is_all_variants(), true);
     }
 
     #[test]
@@ -251,19 +252,19 @@ mod tests {
         }
         assert_eq!(
             BitmaskInverted::InvertedFlag1,
-            BitmaskInverted::all().xor(BitmaskInverted::Flag1)
+            BitmaskInverted::all_bits().xor(BitmaskInverted::Flag1)
         );
         assert_eq!(
             BitmaskInverted::InvertedFlag2,
-            BitmaskInverted::all().xor(BitmaskInverted::Flag2)
+            BitmaskInverted::all_bits().xor(BitmaskInverted::Flag2)
         );
         assert_eq!(
             BitmaskInverted::InvertedFlag3,
-            BitmaskInverted::all().xor(BitmaskInverted::Flag3)
+            BitmaskInverted::all_bits().xor(BitmaskInverted::Flag3)
         );
         assert_eq!(
             BitmaskInverted::InvertedFlag4,
-            BitmaskInverted::all().xor(BitmaskInverted::Flag4)
+            BitmaskInverted::all_bits().xor(BitmaskInverted::Flag4)
         );
     }
 
@@ -382,7 +383,7 @@ mod tests {
             "BitmaskVecDebug[Flag2, Flag3]"
         );
         assert_eq!(
-            format!("{:?}", BitmaskVecDebug::full()),
+            format!("{:?}", BitmaskVecDebug::all_variants()),
             "BitmaskVecDebug[Flag1, Flag2, Flag12, Flag3]"
         );
 
@@ -427,7 +428,7 @@ mod tests {
             "BitmaskVecDebug[Flag1, InvertedFlag2]"
         );
         assert_eq!(
-            format!("{:?}", BitmaskVecDebug::full()),
+            format!("{:?}", BitmaskVecDebug::all_variants()),
             "BitmaskVecDebug[Flag1, InvertedFlag1, Flag2, InvertedFlag2]"
         );
     }
