@@ -154,7 +154,7 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
             /// This will include bits that do not have any flags.
             /// Use `::all_flags()` if you only want to use flags.
             #[inline]
-            #[deprecated(note = "Please use the all_bits constructor")]
+            #[deprecated(note = "Please use the `::all_bits()` constructor")]
             #vis const fn all() -> Self {
                 Self::all_bits()
             }
@@ -164,7 +164,7 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
             /// This will check for `bits == !0`,
             /// use `.is_all_flags()` if you only want to check for all flags
             #[inline]
-            #[deprecated(note = "Please use the is_all_bits method")]
+            #[deprecated(note = "Please use the `.is_all_bits()` method")]
             #vis const fn is_all(&self) -> bool {
                 self.is_all_bits()
             }
@@ -172,7 +172,7 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
 
             /// Returns a bitmask that contains all flags.
             #[inline]
-            #[deprecated(note = "Please use the all_flags constructor")]
+            #[deprecated(note = "Please use the `::all_flags()` constructor")]
             #vis const fn full() -> Self {
                 Self::all_flags()
             }
@@ -182,7 +182,7 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
             /// This will fail if any unused bit is set,
             /// consider using `.truncate()` first.
             #[inline]
-            #[deprecated(note = "Please use the is_all_flags method")]
+            #[deprecated(note = "Please use the `.is_all_flags()` method")]
             #vis const fn is_full(&self) -> bool {
                 self.is_all_flags()
             }
