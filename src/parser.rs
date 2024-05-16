@@ -119,7 +119,7 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
             /// Returns a bitmask that contains all values.
             ///
             /// This will include bits that do not have any flags.
-            /// Use `::all_variants()` if you only want to use flags.
+            /// Use `::all_flags()` if you only want to use flags.
             #[inline]
             #vis const fn all_bits() -> Self {
                 Self { bits: !0 }
@@ -127,14 +127,14 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
 
             /// Returns a bitmask that contains all flags.
             #[inline]
-            #vis const fn all_variants() -> Self {
+            #vis const fn all_flags() -> Self {
                 Self { bits: #(#all_flags.bits |)* 0 }
             }
 
             /// Returns `true` if the bitmask contains all values.
             ///
             /// This will check for `bits == !0`,
-            /// use `.is_all_variants()` if you only want to check for all flags
+            /// use `.is_all_flags()` if you only want to check for all flags
             #[inline]
             #vis const fn is_all_bits(&self) -> bool {
                 self.bits == !0
@@ -145,14 +145,14 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
             /// This will fail if any unused bit is set,
             /// consider using `.truncate()` first.
             #[inline]
-            #vis const fn is_all_variants(&self) -> bool {
-                self.bits == Self::all_variants().bits
+            #vis const fn is_all_flags(&self) -> bool {
+                self.bits == Self::all_flags().bits
             }
 
             /// Returns a bitmask that contains all values.
             ///
             /// This will include bits that do not have any flags.
-            /// Use `::all_variants()` if you only want to use flags.
+            /// Use `::all_flags()` if you only want to use flags.
             #[inline]
             #[deprecated(note = "Please use the all_bits constructor")]
             #vis const fn all() -> Self {
@@ -162,7 +162,7 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
             /// Returns `true` if the bitmask contains all values.
             ///
             /// This will check for `bits == !0`,
-            /// use `.is_all_variants()` if you only want to check for all flags
+            /// use `.is_all_flags()` if you only want to check for all flags
             #[inline]
             #[deprecated(note = "Please use the is_all_bits method")]
             #vis const fn is_all(&self) -> bool {
@@ -172,9 +172,9 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
 
             /// Returns a bitmask that contains all flags.
             #[inline]
-            #[deprecated(note = "Please use the all_variants constructor")]
+            #[deprecated(note = "Please use the all_flags constructor")]
             #vis const fn full() -> Self {
-                Self::all_variants()
+                Self::all_flags()
             }
 
             /// Returns `true` if the bitmask contains all flags.
@@ -182,9 +182,9 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
             /// This will fail if any unused bit is set,
             /// consider using `.truncate()` first.
             #[inline]
-            #[deprecated(note = "Please use the is_all_variants method")]
+            #[deprecated(note = "Please use the is_all_flags method")]
             #vis const fn is_full(&self) -> bool {
-                self.is_all_variants()
+                self.is_all_flags()
             }
 
             /// Returns a bitmask that does not contain any values.
@@ -202,7 +202,7 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
             /// Returns a bitmask that only has bits corresponding to flags
             #[inline]
             #vis const fn truncate(&self) -> Self {
-                Self { bits: self.bits & Self::all_variants().bits }
+                Self { bits: self.bits & Self::all_flags().bits }
             }
 
             /// Returns `true` if `self` intersects with any value in `other`,

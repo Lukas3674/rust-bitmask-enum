@@ -54,11 +54,11 @@ mod tests {
 
     #[test]
 
-    fn test_all_variants() {
-        let all_variants = Bitmask::all_variants();
-        assert_eq!(all_variants.is_all_variants(), true);
+    fn test_all_flags() {
+        let all_flags = Bitmask::all_flags();
+        assert_eq!(all_flags.is_all_flags(), true);
         assert_eq!(
-            all_variants,
+            all_flags,
             Bitmask::Flag1
                 | Bitmask::Flag2
                 | Bitmask::Flag3
@@ -74,8 +74,8 @@ mod tests {
     fn test_truncate() {
         let all = Bitmask::all_bits();
         assert_eq!(all.is_all_bits(), true);
-        assert_eq!(all.is_all_variants(), false);
-        assert_eq!(all.truncate().is_all_variants(), true);
+        assert_eq!(all.is_all_flags(), false);
+        assert_eq!(all.truncate().is_all_flags(), true);
     }
 
     #[test]
@@ -383,7 +383,7 @@ mod tests {
             "BitmaskVecDebug[Flag2, Flag3]"
         );
         assert_eq!(
-            format!("{:?}", BitmaskVecDebug::all_variants()),
+            format!("{:?}", BitmaskVecDebug::all_flags()),
             "BitmaskVecDebug[Flag1, Flag2, Flag12, Flag3]"
         );
 
@@ -428,7 +428,7 @@ mod tests {
             "BitmaskVecDebug[Flag1, InvertedFlag2]"
         );
         assert_eq!(
-            format!("{:?}", BitmaskVecDebug::all_variants()),
+            format!("{:?}", BitmaskVecDebug::all_flags()),
             "BitmaskVecDebug[Flag1, InvertedFlag1, Flag2, InvertedFlag2]"
         );
     }
