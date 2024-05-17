@@ -120,7 +120,7 @@ fn main() {
 
     println!("{:?}", BitmaskVecDebug::none()); // BitmaskVecDebug[]
     println!("{:?}", BitmaskVecDebug::Flag1); // BitmaskVecDebug[Flag1]
-    println!("{:?}", BitmaskVecDebug::full()); // BitmaskVecDebug[Flag1, Flag2]
+    println!("{:?}", BitmaskVecDebug::all_flags()); // BitmaskVecDebug[Flag1, Flag2]
 }
 ```
 
@@ -138,15 +138,15 @@ const fn bits(&self) -> #type;
 
 // Returns a bitmask that contains all values.
 //
-// This will include bits that do not have any flags.
-// Use `::full()` if you only want to use flags.
-const fn all() -> Self;
+// This will include bits that do not have any associated flags.
+// Use `::all_flags()` if you only want to use flags.
+const fn all_bits() -> Self;
 
 // Returns `true` if the bitmask contains all values.
 //
 // This will check for `bits == !0`,
-// use `.is_full()` if you only want to check for all flags
-const fn is_all(&self) -> bool;
+// use `.is_all_flags()` if you only want to check for all flags
+const fn is_all_bits(&self) -> bool;
 
 // Returns a bitmask that does not contain any values.
 const fn none() -> Self;
@@ -155,13 +155,13 @@ const fn none() -> Self;
 const fn is_none(&self) -> bool;
 
 // Returns a bitmask that contains all flags.
-const fn full() -> Self;
+const fn all_flags() -> Self;
 
 // Returns `true` if the bitmask contains all flags.
 //
 // This will fail if any unused bit is set,
 // consider using `.truncate()` first.
-const fn is_full(&self) -> bool;
+const fn is_all_flags(&self) -> bool;
 
 // Returns a bitmask that only has bits corresponding to flags
 const fn truncate(&self) -> Self;
