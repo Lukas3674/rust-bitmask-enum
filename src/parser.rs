@@ -76,13 +76,19 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
         quote::quote! {
             impl core::fmt::Debug for #ident {
                 fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
-                    let mut matches = Vec::new();
+                    write!(f, "{}[", stringify!(#ident))?;
 
+                    let mut has_flags = false;
                     #(if self.contains(#all_flags) {
-                        matches.push(#all_flags_names);
+                        if has_flags {
+                            write!(f, ", {}", #all_flags_names)?;
+                        } else {
+                            write!(f, "{}", #all_flags_names)?;
+                            has_flags = true;
+                        }
                     })*
 
-                    write!(f, "{}[{}]", stringify!(#ident), matches.join(", "))
+                    write!(f, "]")
                 }
             }
         }
