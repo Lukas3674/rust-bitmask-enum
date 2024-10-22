@@ -98,6 +98,24 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
         }
     };
 
+    let display_impl = if config.vec_display {
+        quote::quote! {
+            impl core::fmt::Display for #ident {
+                fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+                    let mut matches = Vec::new();
+
+                    #(if self.contains(#all_flags) {
+                        matches.push(#all_flags_names);
+                    })*
+
+                    write!(f, "{}", matches.join(", "))
+                }
+            }
+        }
+    } else {
+        quote::quote! {}
+    };
+
     Ok(TokenStream::from(quote::quote! {
         #(#attrs)*
         #[repr(transparent)]
@@ -323,6 +341,8 @@ pub fn parse(attr: TokenStream, mut item: ItemEnum) -> Result<TokenStream> {
 
         #debug_impl
 
+        #display_impl
+
         impl core::fmt::Binary for #ident {
             #[inline]
             fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
@@ -373,6 +393,7 @@ fn parse_typ(attr: TokenStream) -> Result<Ident> {
 struct Config {
     inverted_flags: bool,
     vec_debug: bool,
+    vec_display: bool,
 }
 
 impl Config {
@@ -380,6 +401,7 @@ impl Config {
         Self {
             inverted_flags: false,
             vec_debug: false,
+            vec_display: false,
         }
     }
 }
@@ -392,6 +414,7 @@ impl Parse for Config {
             match arg.to_string().as_str() {
                 "inverted_flags" => config.inverted_flags = true,
                 "vec_debug" => config.vec_debug = true,
+                "vec_display" => config.vec_display = true,
                 _ => return Err(Error::new_spanned(arg, "unknown config option")),
             }
         }

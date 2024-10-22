@@ -399,6 +399,79 @@ mod tests {
     }
 
     #[test]
+    fn test_vec_display() {
+        #[bitmask]
+        #[bitmask_config(vec_display)]
+        pub enum BitmaskVecDisplay {
+            Flag1,
+            Flag2,
+            Flag12 = Self::Flag1.or(Self::Flag2).bits,
+            Flag3,
+        }
+
+        assert_eq!(format!("{}", BitmaskVecDisplay::none()), "");
+        assert_eq!(format!("{}", BitmaskVecDisplay::Flag1), "Flag1");
+        assert_eq!(format!("{}", BitmaskVecDisplay::Flag2), "Flag2");
+        assert_eq!(
+            format!("{}", BitmaskVecDisplay::Flag12),
+            "Flag1, Flag2, Flag12"
+        );
+        assert_eq!(format!("{}", BitmaskVecDisplay::Flag3), "Flag3");
+        assert_eq!(
+            format!("{}", BitmaskVecDisplay::Flag2.or(BitmaskVecDisplay::Flag3)),
+            "Flag2, Flag3"
+        );
+        assert_eq!(
+            format!("{}", BitmaskVecDisplay::all_flags()),
+            "Flag1, Flag2, Flag12, Flag3"
+        );
+    }
+
+    #[test]
+    fn test_vec_debug_display() {
+        #[bitmask]
+        #[bitmask_config(vec_debug, vec_display)]
+        pub enum BitmaskVecDebugDisplay {
+            Flag1,
+            Flag2,
+            Flag12 = Self::Flag1.or(Self::Flag2).bits,
+        }
+
+        assert_eq!(
+            format!(
+                "{:?} - {}",
+                BitmaskVecDebugDisplay::none(),
+                BitmaskVecDebugDisplay::none()
+            ),
+            "BitmaskVecDebugDisplay[] - "
+        );
+        assert_eq!(
+            format!(
+                "{:?} - {}",
+                BitmaskVecDebugDisplay::Flag1,
+                BitmaskVecDebugDisplay::Flag1
+            ),
+            "BitmaskVecDebugDisplay[Flag1] - Flag1"
+        );
+        assert_eq!(
+            format!(
+                "{} - {:?}",
+                BitmaskVecDebugDisplay::Flag2,
+                BitmaskVecDebugDisplay::Flag2
+            ),
+            "Flag2 - BitmaskVecDebugDisplay[Flag2]"
+        );
+        assert_eq!(
+            format!(
+                "{:?} - {}",
+                BitmaskVecDebugDisplay::all_flags(),
+                BitmaskVecDebugDisplay::all_flags()
+            ),
+            "BitmaskVecDebugDisplay[Flag1, Flag2, Flag12] - Flag1, Flag2, Flag12"
+        );
+    }
+
+    #[test]
     fn test_vec_debug_inverted() {
         #[bitmask(u8)]
         #[bitmask_config(vec_debug, inverted_flags)]
@@ -434,6 +507,32 @@ mod tests {
     }
 
     #[test]
+    fn test_vec_display_inverted() {
+        #[bitmask(u8)]
+        #[bitmask_config(vec_display, inverted_flags)]
+        pub enum BitmaskVecDisplay {
+            Flag1,
+            Flag2,
+        }
+
+        assert_eq!(format!("{}", BitmaskVecDisplay::none()), "");
+        assert_eq!(format!("{}", BitmaskVecDisplay::Flag1), "Flag1");
+        assert_eq!(format!("{}", BitmaskVecDisplay::Flag2), "Flag2");
+        assert_eq!(
+            format!("{}", BitmaskVecDisplay::InvertedFlag1),
+            "InvertedFlag1, Flag2"
+        );
+        assert_eq!(
+            format!("{}", BitmaskVecDisplay::InvertedFlag2),
+            "Flag1, InvertedFlag2"
+        );
+        assert_eq!(
+            format!("{}", BitmaskVecDisplay::all_flags()),
+            "Flag1, InvertedFlag1, Flag2, InvertedFlag2"
+        );
+    }
+
+    #[test]
     fn test_import_debug() {
         // check that having a `Debug` import doesn't lead to a conflict
         #[allow(unused)]
@@ -442,6 +541,20 @@ mod tests {
         // this should just compile
         #[bitmask]
         pub enum BitmaskImportDebug {
+            Flag1,
+            Flag2,
+        }
+    }
+
+    #[test]
+    fn test_import_display() {
+        // check that having a `Display` import doesn't lead to a conflict
+        #[allow(unused)]
+        use std::fmt::Display;
+
+        // this should just compile
+        #[bitmask]
+        pub enum BitmaskImportDisplay {
             Flag1,
             Flag2,
         }
