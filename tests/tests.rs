@@ -446,4 +446,46 @@ mod tests {
             Flag2,
         }
     }
+
+    #[test]
+    fn test_fields_iter() {
+        #[bitmask(u8)]
+        #[bitmask_config(flags_iter)]
+        pub enum BitmaskFlagsIter {
+            Flag1,
+            Flag2,
+            Flag3,
+            FlagCustom = 123,
+        }
+
+        assert_eq!(
+            BitmaskFlagsIter::flags().copied().collect::<Vec<_>>(),
+            vec![
+                ("Flag1", BitmaskFlagsIter::Flag1),
+                ("Flag2", BitmaskFlagsIter::Flag2),
+                ("Flag3", BitmaskFlagsIter::Flag3),
+                ("FlagCustom", BitmaskFlagsIter::FlagCustom),
+            ],
+        );
+    }
+
+    #[test]
+    fn test_fields_iter_inverted() {
+        #[bitmask(u8)]
+        #[bitmask_config(flags_iter, inverted_flags)]
+        pub enum BitmaskFlagsIter {
+            Flag1,
+            FlagCustom = 123,
+        }
+
+        assert_eq!(
+            BitmaskFlagsIter::flags().copied().collect::<Vec<_>>(),
+            vec![
+                ("Flag1", BitmaskFlagsIter::Flag1),
+                ("InvertedFlag1", BitmaskFlagsIter::InvertedFlag1),
+                ("FlagCustom", BitmaskFlagsIter::FlagCustom),
+                ("InvertedFlagCustom", BitmaskFlagsIter::InvertedFlagCustom),
+            ],
+        );
+    }
 }

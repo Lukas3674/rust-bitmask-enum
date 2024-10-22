@@ -5,14 +5,14 @@ mod tests {
     use bitmask_enum::bitmask;
 
     #[bitmask]
-    #[bitmask_config(inverted_flags, vec_debug)]
+    #[bitmask_config(inverted_flags, vec_debug, flags_iter)]
     enum NoStdBitmask {
         Flag1,
         Flag2,
     }
 
     #[bitmask(u8)]
-    #[bitmask_config(inverted_flags, vec_debug)]
+    #[bitmask_config(inverted_flags, vec_debug, flags_iter)]
     enum NoStdBitmaskU8 {
         Flag1,
         Flag2,
