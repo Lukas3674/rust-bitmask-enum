@@ -114,6 +114,13 @@ enum BitmaskVecDebug {
     Flag2,
 }
 
+#[bitmask(u8)]
+#[bitmask_config(flags_iter)]
+enum BitmaskFlagsIter {
+    Flag1,
+    Flag2,
+}
+
 fn main() {
     println!("{:#010b}", Bitmask::Flag1); // 0b00000001
     println!("{:#010b}", Bitmask::InvertedFlag1); // 0b11111110
@@ -121,6 +128,15 @@ fn main() {
     println!("{:?}", BitmaskVecDebug::none()); // BitmaskVecDebug[]
     println!("{:?}", BitmaskVecDebug::Flag1); // BitmaskVecDebug[Flag1]
     println!("{:?}", BitmaskVecDebug::all_flags()); // BitmaskVecDebug[Flag1, Flag2]
+
+    let bm = BitmaskFlagsIter::Flag1;
+    for flag @ &(_name, value) in BitmaskFlagsIter::flags() {
+        if bm.contains(value) {
+            println!("{:?}", flag) // ("Flag1", BitmaskFlagsIter { bits: 1 })
+        } else {
+            println!("{:?}", flag) // ("Flag2", BitmaskFlagsIter { bits: 2 })
+        }
+    }
 }
 ```
 
@@ -128,6 +144,7 @@ fn main() {
 
 - `inverted_flags` => Adds an inverted flag for every non-inverted flag to the bitmask.
 - `vec_debug` => Replaces the default Debug trait implementation with a custom one that prints the bitmask as a vec of all matching values.
+- `flags_iter` => Adds a `::flags()` method that returns an iterator over all flags of the bitmask represented as a tuple `(name, flag)`.
 
 If you need / can think of any other config option, feel free to suggest them and we can discuss implementing them.
 
@@ -135,6 +152,12 @@ If you need / can think of any other config option, feel free to suggest them an
 ```rust,ignore
 // Returns the underlying bits of the bitmask.
 const fn bits(&self) -> #type;
+
+// Returns an iterator over all flags of the bitmask.
+// Where each Item = (name, flag).
+//
+// This requires the `flags_iter` config option.
+fn flags() -> core::iter::Iterator<Item = &'static (&'static str, Self)>;
 
 // Returns a bitmask that contains all values.
 //
